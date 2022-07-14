@@ -1,6 +1,6 @@
-from enum import Enum, auto
+from enum import Enum
 
-from src.gsop.values.terminology_attribute import AttributeEnum as ak
+from src.gsop.values.terminology.attribute import AttributeEnum as ak
 
 
 class _ArtifactConsts:

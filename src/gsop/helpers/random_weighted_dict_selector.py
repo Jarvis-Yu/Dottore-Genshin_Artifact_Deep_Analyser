@@ -1,6 +1,6 @@
 from typing import Dict
 
-from src.gsop.values.terminology_artifact import ArtifactEnum
+from src.gsop.values.terminology.artifact import ArtifactEnum
 from random import random
 
 

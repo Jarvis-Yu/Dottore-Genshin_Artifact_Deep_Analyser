@@ -1,5 +1,5 @@
 from src.gsop._constReader.data_reader import read_json
-from src.gsop.values.terminology_reaction import ReactionEnum as re, \
+from src.gsop.values.terminology.reaction import ReactionEnum as re, \
     ReactionType as rt
 
 
