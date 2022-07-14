@@ -4,7 +4,7 @@ from src.gsop.values.terminology_attribute import AttributeEnum as ak
 
 
 class _ArtifactConsts:
-    _substat_weights = {
+    SUBSTAT_WEIGHTS = {
         ak.HP_FLAT: 150,
         ak.ATK_FLAT: 150,
         ak.DEF_FLAT: 150,
@@ -18,8 +18,8 @@ class _ArtifactConsts:
     }
 
     def __init__(self, name, mainstat_weights):
-        self._name = name
-        self._mainstat_weights = mainstat_weights
+        self.NAME = name
+        self.MAINSTAT_WEIGHTS = mainstat_weights
 
 
 class ArtifactEnum(Enum):
@@ -74,3 +74,12 @@ class ArtifactEnum(Enum):
             ak.CRIT_DMG: 1000,
         },
     )
+
+    def name(self):
+        return self.value.NAME
+
+    def mainstat_weights(self):
+        return self.value.MAINSTAT_WEIGHTS
+
+    def substat_weights(self):
+        return self.value.SUBSTAT_WEIGHTS
