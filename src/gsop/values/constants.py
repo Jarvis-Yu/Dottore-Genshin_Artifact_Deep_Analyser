@@ -2,6 +2,9 @@ from src.gsop._constReader.data_reader import read_json
 from src.gsop.values.terminology.reaction import ReactionEnum as re, \
     ReactionType as rt
 
+P_3_SUBSTAT_ART_DOMAIN = 0.8
+P_4_SUBSTAT_ART_DOMAIN = 0.2
+
 
 # TODO: use real data
 def element_level_multiplier(level: int, side: str = "character") -> float:
@@ -41,11 +44,11 @@ def transformative_reaction_dmg(em: int, reaction_type: re, level: int):
 
 if __name__ == '__main__':
     em = 720
-    reaction = re.SWIRL
+    reaction = re.OVERLOADED
     lvl = 90
-    print(em_effect_calc(em, reaction))
-    print(element_level_multiplier(lvl))
-    print(reaction.coefficient())
-    print(transformative_reaction_dmg(em, reaction, lvl))
-    reaction2 = re.MELT
-    print(em_effect_calc(em, reaction2))
+    # print(em_effect_calc(em, reaction))
+    # print(element_level_multiplier(lvl))
+    # print(reaction.coefficient())
+    print(transformative_reaction_dmg(em, reaction, lvl) * 0.9)
+    # reaction2 = re.MELT
+    # print(em_effect_calc(em, reaction2))
