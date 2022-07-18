@@ -17,7 +17,7 @@ class WeightedAttrs:
         self._weighted_attrs: Dict[AttributeEnum, float] = weighted_attrs.copy()
         return self
 
-    def add(self, weighted_attr: AttributeEnum, weight: float = 1):
+    def add(self, weighted_attr: AttributeEnum, weight: float = 1) -> bool:
         """
         :param weight: from 0 to 1
         """
