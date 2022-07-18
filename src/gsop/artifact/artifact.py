@@ -8,6 +8,7 @@ class ArtifactAttrs:
     A class which is used to hold stats for an artifact.
     It can hold sub-stats information, as well as providing them.
     """
+
     def __init__(self):
         """
         Initializes an empty class
@@ -18,6 +19,7 @@ class ArtifactAttrs:
         """
         Sets the class dictionary to a copy of `attrs`.
         The "scale of stat" refers to 0.7/0.8/0.9/1.0, the ratio of possible artifact sub-stat value.
+
         :param attrs: Dict[attribute, scale_of_stat]
         :return: self
         """
@@ -82,6 +84,7 @@ class Artifact:
     """
     The class for an artifact.
     """
+
     def __init__(self):
         self._level = 0
         self._attrs = ArtifactAttrs()
