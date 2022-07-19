@@ -1,4 +1,4 @@
-# Pantalone (Genshin Artifact Enhance Helper)
+# Dottore (Genshin Artifact Enhance Helper)
 
 The project is still in its early stages.
 So it does not have a friendly user interface yet.
