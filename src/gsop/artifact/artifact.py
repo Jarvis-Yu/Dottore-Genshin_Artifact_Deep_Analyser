@@ -1,6 +1,6 @@
 from typing import Dict
 
-from src.gsop.values.terminology.attribute import AttributeEnum
+from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
 
 class ArtifactAttrs:
@@ -67,7 +67,7 @@ class ArtifactAttrs:
         :return: the actual value of the sub-stat that will be shown on an artifact.
                  Returns -1 if the attribute cannot be a sub-stat for some reason.
         """
-        val = attr.substat_max_val()
+        val = attr.subattr_max_val()
         if val == -1:
             return -1
         return self.get_scale(attr) * val
@@ -87,6 +87,7 @@ class Artifact:
 
     def __init__(self):
         self._level = 0
-        self._attrs = ArtifactAttrs()
+        self._exp = 0
         self._set = None
-        self._mainstat = None
+        self._mainattr = None
+        self._subattrs = ArtifactAttrs()

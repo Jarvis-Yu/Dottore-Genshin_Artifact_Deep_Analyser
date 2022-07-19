@@ -1,14 +1,14 @@
 from enum import Enum
 from typing import Dict
 
-from src.gsop.values.terminology.attribute import AttributeEnum
+from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
 
 MAX_NUM_STATS = 4
 
 
 class _ArtifactConsts:
-    SUBSTAT_WEIGHTS = {
+    SUBATTR_WEIGHTS = {
         AttributeEnum.HP_FLAT: 150,
         AttributeEnum.ATK_FLAT: 150,
         AttributeEnum.DEF_FLAT: 150,
@@ -21,9 +21,9 @@ class _ArtifactConsts:
         AttributeEnum.ER: 100,
     }
 
-    def __init__(self, name: str, mainstat_weights: Dict[AttributeEnum, float]):
+    def __init__(self, name: str, mainattr_weights: Dict[AttributeEnum, float]):
         self.NAME = name
-        self.MAINSTAT_WEIGHTS = mainstat_weights
+        self.MAINATTR_WEIGHTS = mainattr_weights
 
 
 class ArtifactEnum(Enum):
@@ -82,8 +82,8 @@ class ArtifactEnum(Enum):
     def name(self) -> str:
         return self.value.NAME
 
-    def mainstat_weights(self) -> Dict[AttributeEnum, float]:
-        return self.value.MAINSTAT_WEIGHTS
+    def mainattr_weights(self) -> Dict[AttributeEnum, float]:
+        return self.value.MAINATTR_WEIGHTS
 
-    def substat_weights(self) -> Dict[AttributeEnum, float]:
-        return self.value.SUBSTAT_WEIGHTS
+    def subattr_weights(self) -> Dict[AttributeEnum, float]:
+        return self.value.SUBATTR_WEIGHTS

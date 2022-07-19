@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from typing import List
 
-from src.gsop.values.terminology.element import ElementEnum as ee
+from src.gsop.values.terminology.element_consts import ElementEnum as ee
 
 
 class Reaction:
