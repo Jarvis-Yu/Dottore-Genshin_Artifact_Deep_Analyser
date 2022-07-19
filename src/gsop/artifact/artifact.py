@@ -1,93 +1,120 @@
-from typing import Dict
-
+from src.gsop.artifact.artifact_attrs import ArtifactAttrs
+from src.gsop.artifact.rating import WeightedAttrs, artifact_rating_expectation, \
+    default_rating_to_crit_based_rating, best_possible_rating
+from src.gsop.values.terminology.artifact_consts import ArtifactEnum
 from src.gsop.values.terminology.attribute_consts import AttributeEnum
-
-
-class ArtifactAttrs:
-    """
-    A class which is used to hold stats for an artifact.
-    It can hold sub-stats information, as well as providing them.
-    """
-
-    def __init__(self):
-        """
-        Initializes an empty class
-        """
-        self._attrs: Dict[AttributeEnum, float] = {}
-
-    def set(self, attrs: Dict[AttributeEnum, float]):
-        """
-        Sets the class dictionary to a copy of `attrs`.
-        The "scale of stat" refers to 0.7/0.8/0.9/1.0, the ratio of possible artifact sub-stat value.
-
-        :param attrs: Dict[attribute, scale_of_stat]
-        :return: self
-        """
-        self._attrs = attrs.copy()
-        return self
-
-    def add(self, attr: AttributeEnum, scale: float = 1) -> None:
-        """
-        Adds the `scale` to the `attr`, if `attr` is not one of the sub-stats yet, it will be added.
-        """
-        self._attrs[attr] = self._attrs.setdefault(attr, 0) + scale
-
-    def remove(self, attr: AttributeEnum) -> None:
-        """
-        Removes an `attr` from the sub-stats.
-        """
-        self._attrs.pop(attr, None)
-
-    def force_update(self, attr: AttributeEnum, scale: float) -> None:
-        """
-        Sets the scale of `attr` to `scale` unconditionally.
-        """
-        self._attrs[attr] = scale
-
-    def num_of_attrs(self) -> int:
-        """
-        :return: number of attributes the artifact has.
-        """
-        return len(self._attrs)
-
-    def attrs(self):
-        """
-        :return: the attributes the artifact has.
-        """
-        return self._attrs.keys()
-
-    def has_attr(self, attr: AttributeEnum) -> bool:
-        return attr in self._attrs
-
-    def get_scale(self, attr: AttributeEnum) -> float:
-        return self._attrs[attr]
-
-    def get_absolute_value(self, attr: AttributeEnum) -> float:
-        """
-        :return: the actual value of the sub-stat that will be shown on an artifact.
-                 Returns -1 if the attribute cannot be a sub-stat for some reason.
-        """
-        val = attr.subattr_max_val()
-        if val == -1:
-            return -1
-        return self.get_scale(attr) * val
-
-    def get_read_only(self) -> Dict[AttributeEnum, float]:
-        """
-        :return: the attributes field of the class, passed by reference.
-                 DO NOT USE THIS METHOD UNLESS YOU KNOW WHAT YOU ARE DOING!
-        """
-        return self._attrs
 
 
 class Artifact:
     """
-    The class for an artifact.
+    The class for an artifact. (only 5-star artifact for now)
     """
 
-    def __init__(self):
-        self._level = 0
-        self._exp = 0
-        self._set = None
-        self._mainattr = None
-        self._subattrs = ArtifactAttrs()
+    def __init__(self, level: int, exp: int, artifact_set, artifact_type: ArtifactEnum,
+                 mainattr: AttributeEnum, subattrs: ArtifactAttrs,
+                 weighted_subattrs: WeightedAttrs):
+        self._level: int = level
+        self._exp: int = exp
+        self._artifact_set = artifact_set
+        self._artifact_type: ArtifactEnum = artifact_type
+        self._mainattr: AttributeEnum = mainattr
+        self._subattrs: ArtifactAttrs = subattrs
+        self._weighted_subattrs: WeightedAttrs = weighted_subattrs
+
+    def expected_rating(self, weighted_subattrs: WeightedAttrs = None):
+        """
+        :param weighted_subattrs: if not defined, use the private field of class instead
+        :return: average rating
+        """
+        if weighted_subattrs is None:
+            weighted_subattrs = self._weighted_subattrs
+        return default_rating_to_crit_based_rating(
+            artifact_rating_expectation(self._artifact_type, self._mainattr, self._level,
+                                        self._subattrs, weighted_subattrs)
+        )
+
+    def extreme_rating(self, weighted_subattrs: WeightedAttrs = None):
+        """
+        :param weighted_subattrs: if not defined, use the private field of class instead
+        :return: best possible rating
+        """
+        if weighted_subattrs is None:
+            weighted_subattrs = self._weighted_subattrs
+        return default_rating_to_crit_based_rating(
+            best_possible_rating(self._artifact_type, self._mainattr, self._level, self._subattrs,
+                                 weighted_subattrs)
+        )
+
+    def level_up(self):
+        if self._level < 20:
+            self._level += 1
+            self._exp = 0
+            return True
+        else:
+            return False
+
+    def __str__(self):
+        return f"Artifact{{level: {self._level}, artifact_type: {self._artifact_type}, main-attr: {self._mainattr}}} "
+
+    @classmethod
+    def expected_rating_plan(cls, level: int, artifact_type: ArtifactEnum, mainattr: AttributeEnum,
+                             subattrs: ArtifactAttrs):
+        return Artifact(level, 0, None, artifact_type, mainattr, subattrs,
+                        WeightedAttrs.crit_atk_plan())
+
+    @classmethod
+    def default_plan(cls):
+        return Artifact(0, 0, None, ArtifactEnum.FLOWER, AttributeEnum.HP_FLAT, ArtifactAttrs(),
+                        WeightedAttrs.crit_atk_plan())
+
+
+class ArtifactBuilder:
+    """
+    A builder for `Artifact`, you should fill the field necessary yourself. No checks before build.
+    """
+    _level: int = 0
+    _exp: int = 0
+    _artifact_set = None
+    _artifact_type: ArtifactEnum = ArtifactEnum.FLOWER
+    _mainattr: AttributeEnum = AttributeEnum.HP_FLAT
+    _subattrs: ArtifactAttrs = ArtifactAttrs()
+    _weighted_subattrs: WeightedAttrs = WeightedAttrs.crit_atk_plan()
+
+    def level(self, level: int):
+        self._level = level
+        return self
+
+    def exp(self, exp: int):
+        self._exp = exp
+        return self
+
+    def artifact_set(self, artifact_set):
+        self._artifact_set = artifact_set
+        return self
+
+    def mainattr(self, mainattr: AttributeEnum):
+        self._mainattr = mainattr
+        return self
+
+    def subattrs(self, subattrs: ArtifactAttrs):
+        self._subattrs = subattrs
+        return self
+
+    def weighted_subattrs(self, weighted_subattrs: WeightedAttrs):
+        self._weighted_subattrs = weighted_subattrs
+        return self
+
+    def build(self):
+        return Artifact(self._level, self._exp, self._artifact_set, self._artifact_type,
+                        self._mainattr, self._subattrs, self._weighted_subattrs)
+
+
+if __name__ == '__main__':
+    art: Artifact = Artifact.expected_rating_plan(0, ArtifactEnum.SANDS, AttributeEnum.ATK_PCT,
+                                                  ArtifactAttrs().set_avg({
+                                                      AttributeEnum.CRIT_RATE,
+                                                      AttributeEnum.CRIT_DMG,
+                                                      AttributeEnum.EM,
+                                                  }))
+    print(art.expected_rating())
+    print(art.extreme_rating())

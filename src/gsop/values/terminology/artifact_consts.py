@@ -4,7 +4,7 @@ from typing import Dict
 from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
 
-MAX_NUM_STATS = 4
+MAX_NUM_ATTRS = 4
 
 
 class _ArtifactConsts:

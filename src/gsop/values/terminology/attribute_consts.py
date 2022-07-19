@@ -1,6 +1,9 @@
 from enum import Enum, auto
 
 
+AVG_SUBATTR_RATIO = 0.85
+
+
 class _AttributeConsts:
     def __init__(self, name: str, mainattr_max_val: float = -1, subattr_max_val: float = -1):
         self.NAME = name
