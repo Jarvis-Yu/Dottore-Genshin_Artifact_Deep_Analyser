@@ -1,6 +1,9 @@
 from src.gsop.artifact.artifact_attrs import ArtifactAttrs
-from src.gsop.artifact.rating import WeightedAttrs, artifact_rating_expectation, \
-    default_rating_to_crit_based_rating, best_possible_rating
+from src.gsop.artifact.rarity import rarity_in_domain_runs
+from src.gsop.artifact.rating import artifact_rating_expectation, \
+    default_rating_to_crit_based_rating, best_possible_rating, relative_rating_compare_subattrs
+from src.gsop.artifact.weighted_attrs import WeightedAttrs
+from src.gsop.helpers.random_weighted_dict_selector import wd_p_key
 from src.gsop.values.terminology.artifact_consts import ArtifactEnum
 from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
@@ -45,6 +48,23 @@ class Artifact:
                                  weighted_subattrs)
         )
 
+    def relative_rating(self, weighted_subattrs: WeightedAttrs = None):
+        """
+        Currently only work for artifacts below level 4.
+
+        :param weighted_subattrs:
+        :return:
+        """
+        if weighted_subattrs is None:
+            weighted_subattrs = self._weighted_subattrs
+        p_set = 1 / 2
+        p_artifact_type = 1 / len(ArtifactEnum)
+        p_main_stat = wd_p_key(self._artifact_type.mainattr_weights(), self._mainattr)
+        p_subattrs = relative_rating_compare_subattrs(self._artifact_type, self._mainattr,
+                                                      self._level, self._subattrs,
+                                                      weighted_subattrs)
+        return p_set * p_artifact_type * p_main_stat * p_subattrs
+
     def level_up(self):
         if self._level < 20:
             self._level += 1
@@ -57,8 +77,8 @@ class Artifact:
         return f"Artifact{{level: {self._level}, artifact_type: {self._artifact_type}, main-attr: {self._mainattr}}} "
 
     @classmethod
-    def expected_rating_plan(cls, level: int, artifact_type: ArtifactEnum, mainattr: AttributeEnum,
-                             subattrs: ArtifactAttrs):
+    def rating_only_plan(cls, level: int, artifact_type: ArtifactEnum, mainattr: AttributeEnum,
+                         subattrs: ArtifactAttrs):
         return Artifact(level, 0, None, artifact_type, mainattr, subattrs,
                         WeightedAttrs.crit_atk_plan())
 
@@ -110,11 +130,27 @@ class ArtifactBuilder:
 
 
 if __name__ == '__main__':
-    art: Artifact = Artifact.expected_rating_plan(0, ArtifactEnum.SANDS, AttributeEnum.ATK_PCT,
-                                                  ArtifactAttrs().set_avg({
-                                                      AttributeEnum.CRIT_RATE,
-                                                      AttributeEnum.CRIT_DMG,
-                                                      AttributeEnum.EM,
-                                                  }))
-    print(art.expected_rating())
-    print(art.extreme_rating())
+    art1: Artifact = Artifact.rating_only_plan(0, ArtifactEnum.SANDS, AttributeEnum.ATK_PCT,
+                                               ArtifactAttrs().set_avg({
+                                                   AttributeEnum.CRIT_RATE,
+                                                   AttributeEnum.CRIT_DMG,
+                                                   AttributeEnum.EM,
+                                                   AttributeEnum.ER,
+                                               }))
+    art2: Artifact = Artifact.rating_only_plan(0, ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT,
+                                               ArtifactAttrs().set_avg({
+                                                   AttributeEnum.CRIT_RATE,
+                                                   AttributeEnum.CRIT_DMG,
+                                                   # AttributeEnum.HP_FLAT,
+                                                   AttributeEnum.EM,
+                                                   AttributeEnum.DEF_FLAT,
+                                               }))
+    print(art1.expected_rating())
+    print(art1.extreme_rating())
+    print(art1.relative_rating())
+    print(rarity_in_domain_runs(art1.relative_rating()))
+    print("======")
+    print(art2.expected_rating())
+    print(art2.extreme_rating())
+    print(art2.relative_rating())
+    print(rarity_in_domain_runs(art2.relative_rating()))

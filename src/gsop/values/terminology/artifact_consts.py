@@ -1,3 +1,4 @@
+import itertools
 from enum import Enum
 from typing import Dict
 
@@ -5,6 +6,8 @@ from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
 
 MAX_NUM_ATTRS = 4
+P_3_SUBATTRS_ART_DOMAIN = 0.8
+P_4_SUBATTRS_ART_DOMAIN = 0.2
 
 
 class _ArtifactConsts:
@@ -24,6 +27,10 @@ class _ArtifactConsts:
     def __init__(self, name: str, mainattr_weights: Dict[AttributeEnum, float]):
         self.NAME = name
         self.MAINATTR_WEIGHTS = mainattr_weights
+
+
+ALL_3_ATTR_COMB = list(itertools.combinations(_ArtifactConsts.SUBATTR_WEIGHTS.keys(), 3))
+ALL_4_ATTR_COMB = list(itertools.combinations(_ArtifactConsts.SUBATTR_WEIGHTS.keys(), 4))
 
 
 class ArtifactEnum(Enum):
@@ -83,7 +90,13 @@ class ArtifactEnum(Enum):
         return self.value.NAME
 
     def mainattr_weights(self) -> Dict[AttributeEnum, float]:
+        """
+        ADD `.copy()` IF NEED CHANGE
+        """
         return self.value.MAINATTR_WEIGHTS
 
     def subattr_weights(self) -> Dict[AttributeEnum, float]:
+        """
+        ADD `.copy()` IF NEED CHANGE
+        """
         return self.value.SUBATTR_WEIGHTS

@@ -1,108 +1,23 @@
-from typing import Dict, Set, List
+import itertools
+import math
+from typing import Set, List, Dict
 
 from src.gsop.artifact.artifact_attrs import ArtifactAttrs
+from src.gsop.artifact.weighted_attrs import WeightedAttrs
 from src.gsop.helpers.random_weighted_dict_selector import wd_p_key
-from src.gsop.values.terminology.artifact_consts import MAX_NUM_ATTRS, ArtifactEnum
+from src.gsop.values.terminology.artifact_consts import MAX_NUM_ATTRS, ArtifactEnum, \
+    P_4_SUBATTRS_ART_DOMAIN, P_3_SUBATTRS_ART_DOMAIN, ALL_3_ATTR_COMB, ALL_4_ATTR_COMB
 from src.gsop.values.terminology.attribute_consts import AttributeEnum, AVG_SUBATTR_RATIO
 
 
-class WeightedAttrs:
-    def __init__(self):
-        self._weighted_attrs: Dict[AttributeEnum, float] = {}
-
-    def set(self, weighted_attrs: Dict[AttributeEnum, float]):
-        """
-        The weights should be from 0 to 1
-        """
-        self._weighted_attrs: Dict[AttributeEnum, float] = weighted_attrs.copy()
-        return self
-
-    def add(self, weighted_attr: AttributeEnum, weight: float = 1) -> bool:
-        """
-        :param weight: from 0 to 1
-        """
-        if weighted_attr not in self._weighted_attrs.keys():
-            self._weighted_attrs[weighted_attr] = weight
-            return True
-        else:
-            return False
-
-    def remove(self, weighted_attr: AttributeEnum) -> bool:
-        if weighted_attr in self._weighted_attrs.keys():
-            self._weighted_attrs.pop(weighted_attr)
-            return True
-        else:
-            return False
-
-    def update(self, weighted_attr: AttributeEnum, weight: float):
-        if weighted_attr in self._weighted_attrs.keys():
-            self._weighted_attrs[weighted_attr] = weight
-            return True
-        else:
-            return False
-
-    def force_update(self, weighted_attr: AttributeEnum, weight: float):
-        self._weighted_attrs[weighted_attr] = weight
-
-    def get(self, weighted_attr: AttributeEnum):
-        return self._weighted_attrs.get(weighted_attr, 0)
-
-    def attrs(self):
-        return self._weighted_attrs.keys()
-
-    @classmethod
-    def crit_atk_er_em_plan(cls):
-        weights = WeightedAttrs()
-        weights.set({
-            AttributeEnum.CRIT_RATE: 1,
-            AttributeEnum.CRIT_DMG: 1,
-            AttributeEnum.ATK_PCT: 0.8,
-            AttributeEnum.ATK_FLAT: 0.3,
-            AttributeEnum.ER: 0.6,
-            AttributeEnum.EM: 0.7,
-        })
-        return weights
-
-    @classmethod
-    def crit_plan(cls):
-        weights = WeightedAttrs()
-        weights.set({
-            AttributeEnum.CRIT_RATE: 1,
-            AttributeEnum.CRIT_DMG: 1,
-        })
-        return weights
-
-    @classmethod
-    def crit_atk_plan(cls):
-        weights = WeightedAttrs()
-        weights.set({
-            AttributeEnum.CRIT_RATE: 1,
-            AttributeEnum.CRIT_DMG: 1,
-            AttributeEnum.ATK_PCT: 0.8,
-            AttributeEnum.ATK_FLAT: 0.3,
-        })
-        return weights
+def default_rating_to_crit_based_rating(rating: float) -> float:
+    return rating * AttributeEnum.CRIT_DMG.subattr_max_val() * 100
 
 
 def artifact_remaining_enhance(lvl: int) -> int:
     if lvl > 20 or lvl < 0:
         return -1
     return (23 - lvl) // 4
-
-
-def _artifact_rating_expectation_4attrs(lvl: int, attrs: ArtifactAttrs,
-                                        weights: WeightedAttrs) -> float:
-    """
-    This is for 5-star artifacts only, please make sure `attrs` has 3 to 4 attributes
-    """
-    chances = artifact_remaining_enhance(lvl)
-    rating = 0
-    chance_per_attr = chances / MAX_NUM_ATTRS
-    for attr in attrs.attrs():
-        tmp = attrs.get_scale(attr)
-        tmp += chance_per_attr * AVG_SUBATTR_RATIO
-        rating += tmp * weights.get(attr)
-    return rating
 
 
 def artifact_rating_expectation(artifact_type: ArtifactEnum, mainattr: AttributeEnum, lvl: int,
@@ -118,7 +33,7 @@ def artifact_rating_expectation(artifact_type: ArtifactEnum, mainattr: Attribute
         tmp += chance_per_attr * AVG_SUBATTR_RATIO
         rating += tmp * weights.get(attr)
     if attrs.num_of_attrs() != MAX_NUM_ATTRS:
-        backup_attrs = artifact_type.subattr_weights()
+        backup_attrs = artifact_type.subattr_weights().copy()
         backup_attrs.pop(mainattr, None)
         for attr in attrs.attrs():
             backup_attrs.pop(attr, None)
@@ -175,14 +90,88 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
     return rating
 
 
-def default_rating_to_crit_based_rating(rating: float) -> float:
-    return rating * AttributeEnum.CRIT_DMG.subattr_max_val() * 100
+def p_permutation(weights, permutation):
+    """
+    :param weights: Dict[key, val]
+    :param permutation: ordered iterable of keys
+    :return: the probabilty that a particular permutation is chosen with weights.
+             And each item can only be chosen once.
+    """
+    p = 1
+    tmp_save = {}
+    for case in permutation:
+        p *= wd_p_key(weights, case)
+        tmp_save[case] = weights.pop(case)
+    for case in tmp_save.keys():
+        weights[case] = tmp_save[case]
+    return p
+
+
+def p_combination(weights, combination):
+    """
+    :param weights: Dict[key, val]
+    :param combination: iterable of keys
+    :return: the probabilty that a particular combination is chosen with weights.
+             And each item can only be chosen once.
+    """
+    pers = itertools.permutations(combination)
+    p = 0
+    for per in pers:
+        p += p_permutation(weights, per)
+    return p
+
+
+def relative_rating_compare_subattrs(artifact_type: ArtifactEnum, mainattr: AttributeEnum, lvl: int,
+                                     attrs: ArtifactAttrs, weights: WeightedAttrs) -> float:
+    """
+    Currently only work for level 0 artifacts.
+    This is an approximation, which differs little from the actual value, but enough for reference.
+
+    :param artifact_type:
+    :param mainattr:
+    :param lvl:
+    :param attrs:
+    :param weights:
+    :return:
+    """
+
+    this_rating = artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights)
+    subattrs_except_main: Dict[AttributeEnum, float] = artifact_type.subattr_weights().copy()
+    subattrs_except_main.pop(mainattr, None)
+
+    def calculate_p(combs, length):
+        p_list = []
+        for comb in combs:
+            if mainattr not in comb:
+                p_comb = p_combination(subattrs_except_main, comb)
+                comb_attrs = ArtifactAttrs()
+                comb_attrs.set_avg(set(comb))
+                comb_avg_rating = artifact_rating_expectation(artifact_type, mainattr, 0,
+                                                              comb_attrs,
+                                                              weights)
+                # print(f"{round(comb_avg_rating, 1)} : {round(p_comb, length)} : {comb_attrs}")
+                if this_rating > comb_avg_rating:
+                    p_list.append(p_comb)
+        return p_list
+
+    p_3: List[float] = calculate_p(ALL_3_ATTR_COMB, 3)
+    p_4: List[float] = calculate_p(ALL_4_ATTR_COMB, 4)
+    p_3.sort()
+    p_4.sort()
+    p = P_3_SUBATTRS_ART_DOMAIN * sum(p_3) + P_4_SUBATTRS_ART_DOMAIN * sum(p_4)
+    # print(f"{round(this_rating, 1)} : THIS : {attrs}")
+    return 1 - p
 
 
 if __name__ == '__main__':
-    a = best_possible_rating(ArtifactEnum.FLOWER, AttributeEnum.HP_FLAT, 0, ArtifactAttrs().set_avg({
+    a_attrs = ArtifactAttrs().set_avg({
         AttributeEnum.CRIT_RATE,
         AttributeEnum.CRIT_DMG,
         AttributeEnum.ATK_PCT,
-    }), WeightedAttrs.crit_atk_plan())
-    print(default_rating_to_crit_based_rating(a))
+        AttributeEnum.ATK_FLAT,
+        # AttributeEnum.ER,
+        # AttributeEnum.EM,
+    })
+    a = relative_rating_compare_subattrs(ArtifactEnum.FLOWER, AttributeEnum.HP_FLAT, 0, a_attrs
+                                         , WeightedAttrs.crit_atk_plan())
+    print(a)

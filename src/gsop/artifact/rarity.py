@@ -7,9 +7,8 @@ import numpy as np
 from src.gsop.helpers.random_weighted_dict_selector import wd_total_weight, \
     wd_p_key
 from src.gsop.statistics.function_call_stat import func_called
-from src.gsop.values.constants import P_3_SUBSTAT_ART_DOMAIN, \
-    P_4_SUBSTAT_ART_DOMAIN
-from src.gsop.values.terminology.artifact_consts import ArtifactEnum
+from src.gsop.values.terminology.artifact_consts import ArtifactEnum, P_3_SUBATTRS_ART_DOMAIN, \
+    P_4_SUBATTRS_ART_DOMAIN
 from src.gsop.values.terminology.attribute_consts import AttributeEnum
 
 FIVE_STAR_ARTIFACT_PER_CONDENSED = 2.141484
@@ -60,9 +59,9 @@ def p_get_x_subattrs(x: int) -> float:
              0 is returned if `x` is not 3 or 4.
     """
     if x == 3:
-        return P_3_SUBSTAT_ART_DOMAIN
+        return P_3_SUBATTRS_ART_DOMAIN
     elif x == 4:
-        return P_4_SUBSTAT_ART_DOMAIN
+        return P_4_SUBATTRS_ART_DOMAIN
     else:
         return 0
 

@@ -2,9 +2,6 @@ from src.gsop._constReader.data_reader import read_json
 from src.gsop.values.terminology.reaction_consts import ReactionEnum as re, \
     ReactionType as rt
 
-P_3_SUBSTAT_ART_DOMAIN = 0.8
-P_4_SUBSTAT_ART_DOMAIN = 0.2
-
 
 # TODO: use real data
 def element_level_multiplier(level: int, side: str = "character") -> float:

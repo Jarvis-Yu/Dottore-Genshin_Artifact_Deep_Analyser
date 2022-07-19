@@ -90,3 +90,10 @@ class ArtifactAttrs:
                  DO NOT USE THIS METHOD UNLESS YOU KNOW WHAT YOU ARE DOING!
         """
         return self._attrs
+
+    def __str__(self):
+        # str_list = ["ArtifactAttrs{"]
+        str_list = []
+        for attr in self.attrs():
+            str_list.append(f"{attr}")
+        return f"ArtifactAttrs{{{', '.join(str_list)}}}"
