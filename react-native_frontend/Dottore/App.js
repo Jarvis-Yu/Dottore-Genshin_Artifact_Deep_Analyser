@@ -1,41 +1,49 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { SafeAreaView, StyleSheet } from "react-native";
-import { AnotherScreen } from "./screens/AnotherScreen";
-import { HomeScreen } from "./screens/HomeScreen";
+import React, { useEffect, useState } from "react";
+import { Switch, Text } from "react-native";
+import { getBackendJson, postBackendJson } from "./app/backend/Backend";
+import RootTabs from "./app/screens/RootTabs";
+import SettingScreen from "./app/screens/SettingScreen";
+import { SingleArtifactRatingScreen } from "./app/screens/SingleArtifactRating";
+import { darkTheme, lightTheme, ThemeContext } from "./app/styles/Styles";
 
 const Stack = createNativeStackNavigator();
-const Tab = createBottomTabNavigator();
 
 export default function App() {
+  console.log("[i] App: rendered");
+  const [darkMode, setDarkMode] = useState(false);
+  const [data, setData] = useState({ val1: -1, val2: -1 });
+
+  async function getSimpleJson() {
+    const data = await getBackendJson({ route: "/simple_json" });
+    if (data.ok) {
+      setData(data.data);
+    } else {
+      // setData({ val1: -1, val2: -1 });
+    }
+  }
+
+  useEffect(() => {
+    getSimpleJson();
+  }, []);
+
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route }) => ({
-          tabBarActiveTintColor: "tomato",
-          tabBarInactiveTintColor: "gray",
-        })}
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeScreen}
-          options={({ route }) => ({ title: route.params?.name })}
-        />
-        <Tab.Screen name="AnotherScreen" component={AnotherScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <ThemeContext.Provider value={darkMode ? darkTheme : lightTheme}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="RootTabs">
+          <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="Single Artifact Rating" component={SingleArtifactRatingScreen} />
+          {/* <Stack.Screen
+            name="Setting"
+            component={SettingScreen}
+            initialParams={{ themeValue: darkMode, themeSet: setDarkMode }}
+          /> */}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Text>
+        {data?.val1}, {data?.val2}
+      </Text>
+    </ThemeContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
