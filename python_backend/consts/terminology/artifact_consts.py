@@ -2,8 +2,7 @@ import itertools
 from enum import Enum
 from typing import Dict
 
-from python_backend.values.terminology.attribute_consts import AttributeEnum
-
+from python_backend.consts.terminology.attribute_consts import AttributeEnum
 
 MAX_NUM_ATTRS = 4
 P_3_SUBATTRS_ART_DOMAIN = 0.8
@@ -27,6 +26,11 @@ class _ArtifactConsts:
     def __init__(self, name: str, mainattr_weights: Dict[AttributeEnum, float]):
         self.NAME = name
         self.MAINATTR_WEIGHTS = mainattr_weights
+
+
+class _ScaledWeights:
+    def __init__(self, pairs: dict):
+        self._tuple = tuple(sorted(pairs.items()))
 
 
 ALL_3_ATTR_COMB = list(itertools.combinations(_ArtifactConsts.SUBATTR_WEIGHTS.keys(), 3))
@@ -100,3 +104,14 @@ class ArtifactEnum(Enum):
         ADD `.copy()` IF NEED CHANGE
         """
         return self.value.SUBATTR_WEIGHTS
+
+
+if __name__ == '__main__':
+    d = {
+        1.0: 0,
+        0.8: 1,
+    }
+    t = tuple(sorted(d.items(), reverse=True))
+    print(t)
+    for i in t:
+        print(i)

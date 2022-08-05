@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from typing import List
 
-from python_backend.values.terminology.element_consts import ElementEnum as ee
+from python_backend.consts.terminology.element_consts import ElementEnum as ee
 
 
 class Reaction:

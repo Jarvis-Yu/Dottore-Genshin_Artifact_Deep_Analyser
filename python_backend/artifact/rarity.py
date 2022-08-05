@@ -4,12 +4,12 @@ from typing import Dict, Set
 
 import numpy as np
 
+from python_backend.consts.terminology.artifact_consts import ArtifactEnum, P_3_SUBATTRS_ART_DOMAIN, \
+    P_4_SUBATTRS_ART_DOMAIN
+from python_backend.consts.terminology.attribute_consts import AttributeEnum
 from python_backend.helpers.random_weighted_dict_selector import wd_total_weight, \
     wd_p_key
 from python_backend.statistics.function_call_stat import func_called
-from python_backend.values.terminology.artifact_consts import ArtifactEnum, P_3_SUBATTRS_ART_DOMAIN, \
-    P_4_SUBATTRS_ART_DOMAIN
-from python_backend.values.terminology.attribute_consts import AttributeEnum
 
 FIVE_STAR_ARTIFACT_PER_CONDENSED = 2.141484
 CONDENSED_RESIN_VALUE = 40
@@ -141,7 +141,7 @@ def p_y_useful_given_x(artifact_type: ArtifactEnum, mainattr: AttributeEnum, x: 
                     frozen_attrs = frozenset(attrs)
                     now[frozen_attrs] = now.setdefault(frozen_attrs, 0) + base[case] * wd_p_key(
                         possible_sub_attrs, attr)
-                for attr in case:  # restore values
+                for attr in case:  # restore consts
                     possible_sub_attrs[attr] = saved_data[attr]
 
         for attr in possible_sub_attrs:
@@ -164,25 +164,8 @@ def p_y_useful_given_x(artifact_type: ArtifactEnum, mainattr: AttributeEnum, x: 
 
 
 if __name__ == '__main__':
-    # start = time.time_ns()
-    # for i in range(1000):
-    #     p_y_useful_given_x(ae.GOBLET, attre.HYDRO_DB, {attre.CRIT_RATE, attre.CRIT_DMG}, 3, 1)
-    # end = time.time_ns()
-    # print(end - start)
-    useful_attrs = {AttributeEnum.CRIT_RATE, AttributeEnum.CRIT_DMG}
-    p_set = p_get_set()
-    p_goblet = p_get_type(ArtifactEnum.GOBLET)
-    p_mainattr = p_get_mainattr(ArtifactEnum.GOBLET, AttributeEnum.PYRO_DB)
-    p_3subattr_filter = p_y_useful_given_x(ArtifactEnum.GOBLET, AttributeEnum.PYRO_DB, 3, 2,
-                                           useful_attrs)
-    p_4subattr_filter = p_y_useful_given_x(ArtifactEnum.GOBLET, AttributeEnum.PYRO_DB, 4, 2,
-                                           useful_attrs)
-    p = p_set * p_goblet * p_mainattr * (
-            p_get_x_subattrs(3) * p_3subattr_filter + p_get_x_subattrs(4) * p_4subattr_filter)
-    p1 = p_set * p_goblet * p_mainattr * p_4subattr_filter
-    print(rarity_in_domain_runs(p1))
-
-    print(p_y_useful_given_x(ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT, 4, 2, {
-        AttributeEnum.CRIT_RATE,
+    print(p_y_useful_given_x(ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT, 4, 1, {
+        AttributeEnum.ATK_PCT,
         AttributeEnum.CRIT_DMG,
+        AttributeEnum.CRIT_RATE,
     }))

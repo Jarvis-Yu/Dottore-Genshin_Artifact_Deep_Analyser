@@ -1,11 +1,11 @@
 from python_backend.artifact.artifact_attrs import ArtifactAttrs
 from python_backend.artifact.rarity import rarity_in_domain_runs
 from python_backend.artifact.rating import artifact_rating_expectation, \
-    default_rating_to_crit_based_rating, best_possible_rating, relative_rating_compare_subattrs
+    default_rating_to_crit_based_rating, best_possible_rating, relative_rarity_compare_subattrs
 from python_backend.artifact.weighted_attrs import WeightedAttrs
 from python_backend.helpers.random_weighted_dict_selector import wd_p_key
-from python_backend.values.terminology.artifact_consts import ArtifactEnum
-from python_backend.values.terminology.attribute_consts import AttributeEnum
+from python_backend.consts.terminology.artifact_consts import ArtifactEnum
+from python_backend.consts.terminology.attribute_consts import AttributeEnum
 
 
 class Artifact:
@@ -57,13 +57,13 @@ class Artifact:
         """
         if weighted_subattrs is None:
             weighted_subattrs = self._weighted_subattrs
-        p_set = 1 / 2
-        p_artifact_type = 1 / len(ArtifactEnum)
+        # p_set = 1 / 2
+        # p_artifact_type = 1 / len(ArtifactEnum)
         p_main_stat = wd_p_key(self._artifact_type.mainattr_weights(), self._mainattr)
-        p_subattrs = relative_rating_compare_subattrs(self._artifact_type, self._mainattr,
+        p_subattrs = relative_rarity_compare_subattrs(self._artifact_type, self._mainattr,
                                                       self._level, self._subattrs,
                                                       weighted_subattrs)
-        return p_set * p_artifact_type * p_main_stat * p_subattrs
+        return p_main_stat * p_subattrs
 
     def level_up(self):
         if self._level < 20:
@@ -141,9 +141,15 @@ if __name__ == '__main__':
                                                ArtifactAttrs().set_avg({
                                                    AttributeEnum.CRIT_RATE,
                                                    AttributeEnum.CRIT_DMG,
-                                                   # AttributeEnum.HP_FLAT,
-                                                   AttributeEnum.EM,
-                                                   AttributeEnum.DEF_FLAT,
+                                                   AttributeEnum.ATK_PCT,
+                                                   AttributeEnum.ER,
+                                               }))
+    art3: Artifact = Artifact.rating_only_plan(0, ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT,
+                                               ArtifactAttrs().set({
+                                                   AttributeEnum.CRIT_RATE: 0.8,
+                                                   AttributeEnum.ATK_PCT: 1,
+                                                   AttributeEnum.HP_FLAT: 1,
+                                                   # AttributeEnum.EM: 1,
                                                }))
     print(art1.expected_rating())
     print(art1.extreme_rating())
@@ -154,3 +160,8 @@ if __name__ == '__main__':
     print(art2.extreme_rating())
     print(art2.relative_rating())
     print(rarity_in_domain_runs(art2.relative_rating()))
+    print("======")
+    print(art3.expected_rating())
+    print(art3.extreme_rating())
+    print(art3.relative_rating())
+    print(rarity_in_domain_runs(art3.relative_rating()))

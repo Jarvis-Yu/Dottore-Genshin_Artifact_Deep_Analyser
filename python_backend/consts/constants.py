@@ -1,5 +1,5 @@
 from python_backend._constReader.data_reader import read_json
-from python_backend.values.terminology.reaction_consts import ReactionEnum as re, \
+from python_backend.consts.terminology.reaction_consts import ReactionEnum as re, \
     ReactionType as rt
 
 

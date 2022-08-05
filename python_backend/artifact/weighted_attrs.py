@@ -1,6 +1,6 @@
 from typing import Dict
 
-from python_backend.values.terminology.attribute_consts import AttributeEnum
+from python_backend.consts.terminology.attribute_consts import AttributeEnum
 
 
 class WeightedAttrs:

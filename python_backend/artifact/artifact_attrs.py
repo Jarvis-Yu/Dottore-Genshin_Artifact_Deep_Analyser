@@ -1,11 +1,11 @@
 from typing import Dict, Set
 
-from python_backend.values.terminology.attribute_consts import AttributeEnum, AVG_SUBATTR_RATIO
+from python_backend.consts.terminology.attribute_consts import AttributeEnum, AVG_SUBATTR_RATIO
 
 
 class ArtifactAttrs:
     """
-    A class which is used to hold stats for an artifact.
+    A class which is used to hold attributes for an artifact.
     It can hold sub-stats information, as well as providing them.
     """
 
@@ -28,7 +28,7 @@ class ArtifactAttrs:
 
     def set_avg(self, attrs: Set[AttributeEnum]):
         """
-        Sets the class' dictionary to a copy of `attrs` with values default to `AVG_SUBATTR_RATIO`
+        Sets the class' dictionary to a copy of `attrs` with consts default to `AVG_SUBATTR_RATIO`
 
         :param attrs: Set[AttributeEnum]
         :return: self
@@ -72,6 +72,11 @@ class ArtifactAttrs:
         return attr in self._attrs
 
     def get_scale(self, attr: AttributeEnum) -> float:
+        """
+        `scale` is one of 0.7, 0.8, 0.9, 1.0
+
+        :return: the scale of the given `attr` e.g. 0.7 for CRIT_RATE
+        """
         return self._attrs[attr]
 
     def get_absolute_value(self, attr: AttributeEnum) -> float:

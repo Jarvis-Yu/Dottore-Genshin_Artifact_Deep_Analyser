@@ -4,7 +4,7 @@ from typing import Dict
 
 def wd_total_weight(dictionary: Dict):
     """
-    Function name stands for `weighted dict total weight`
+    Function name stands for `weighted dictionary total weight`
 
     :param dictionary: Dict[Any, int/float]
     :return: the sum of weights
@@ -14,7 +14,7 @@ def wd_total_weight(dictionary: Dict):
 
 def wd_p_key(dictionary: Dict, key):
     """
-    Function name stands for `weighted dict probability key`
+    Function name stands for `weighted dictionary probability key`
 
     :param dictionary: Dict[Any, int/float]
     :return: The probability that the key will be selected based on the weights.
