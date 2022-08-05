@@ -9,6 +9,7 @@ Data Sources:
 """
 
 AVG_SUBATTR_RATIO = 0.85
+LIST_SUBATTR_RATIO = [0.7, 0.8, 0.9, 1.0]
 
 
 class _AttributeConsts:
