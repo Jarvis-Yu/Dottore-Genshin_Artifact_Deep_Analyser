@@ -141,6 +141,14 @@ def default_rating_to_crit_based_rating(rating: float) -> float:
     return rating * AttributeEnum.CRIT_DMG.subattr_max_val() * 100
 
 
+def artifact_current_rating(mainattr: AttributeEnum, attrs: ArtifactAttrs,
+                            weights: WeightedAttrs) -> float:
+    rating = 0
+    for attr in attrs.attrs():
+        rating += weights.get(attr) * attrs.get_scale(attr)
+    return rating
+
+
 def artifact_rating_expectation(artifact_type: ArtifactEnum, mainattr: AttributeEnum, lvl: int,
                                 attrs: ArtifactAttrs, weights: WeightedAttrs) -> float:
     """
@@ -255,21 +263,6 @@ def relative_rarity_compare_subattrs(artifact_type: ArtifactEnum, mainattr: Attr
     p_4.sort()
     p = P_3_SUBATTRS_ART_DOMAIN * sum(p_3) + P_4_SUBATTRS_ART_DOMAIN * sum(p_4)
     return 1 - p
-
-
-def actual_relative_rarity(artifact_type: ArtifactEnum, mainattr: AttributeEnum, lvl: int,
-                           attrs: ArtifactAttrs, weights: WeightedAttrs) -> float:
-    if attrs.num_of_attrs() == MAX_NUM_ATTRS - 1:
-        pass
-        # def f(weights: Tuple[float], chances) -> Dict[float, float]:
-        #     """
-        #     :param weights: the weights of useful attributes (length from 0 to MAX_NUM_ATTRS)
-        #     :param chances: remaining chances of upgrading sub-attrs
-        #     :return: a dictionary[rating, possibility] given the weights and chances
-        #     """
-        #     pass
-
-    pass
 
 
 if __name__ == '__main__':
