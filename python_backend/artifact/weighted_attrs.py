@@ -47,6 +47,14 @@ class WeightedAttrs:
     def attrs(self):
         return self._weighted_attrs.keys()
 
+    def __copy__(self):
+        w = WeightedAttrs()
+        w.set(self._weighted_attrs.copy())
+        return w
+
+    def copy(self):
+        return self.__copy__()
+
     @classmethod
     def crit_atk_er_em_plan(cls):
         weights = WeightedAttrs()

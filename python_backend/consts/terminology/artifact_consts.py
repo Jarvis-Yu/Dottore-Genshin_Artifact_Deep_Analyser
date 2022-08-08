@@ -93,13 +93,13 @@ class ArtifactEnum(Enum):
     def name(self) -> str:
         return self.value.NAME
 
-    def mainattr_weights(self) -> Dict[AttributeEnum, float]:
+    def mainattr_weights_readonly(self) -> Dict[AttributeEnum, float]:
         """
         ADD `.copy()` IF NEED CHANGE
         """
         return self.value.MAINATTR_WEIGHTS
 
-    def subattr_weights(self) -> Dict[AttributeEnum, float]:
+    def subattr_weights_readonly(self) -> Dict[AttributeEnum, float]:
         """
         ADD `.copy()` IF NEED CHANGE
         """

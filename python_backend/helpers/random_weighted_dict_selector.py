@@ -19,6 +19,11 @@ def wd_p_key(dictionary: Dict, key):
     :param dictionary: Dict[Any, int/float]
     :return: The probability that the key will be selected based on the weights.
     """
+    if key not in dictionary:
+        print(key, "{")
+        for i in dictionary:
+            print(i)
+        print("}")
     return dictionary[key] / wd_total_weight(dictionary)
 
 

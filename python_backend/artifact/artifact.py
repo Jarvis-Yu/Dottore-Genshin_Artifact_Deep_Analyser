@@ -1,9 +1,8 @@
 from python_backend.artifact.artifact_attrs import ArtifactAttrs
-from python_backend.artifact.rarity import rarity_in_domain_runs
 from python_backend.artifact.rating import artifact_rating_expectation, \
-    best_possible_rating, relative_rarity_compare_subattrs, \
-    artifact_current_rating
-from python_backend.artifact.subattr_distribution import leveled_subattrs_distribution
+    best_possible_rating, artifact_current_rating
+from python_backend.artifact.subattr_distribution import leveled_subattrs_distribution, \
+    relative_rarity_compare_subattrs
 from python_backend.artifact.weighted_attrs import WeightedAttrs
 from python_backend.consts.terminology.artifact_consts import ArtifactEnum
 from python_backend.consts.terminology.attribute_consts import AttributeEnum
@@ -52,30 +51,14 @@ class Artifact:
                                     self._subattrs, weighted_subattrs)
 
     def relative_rating(self, weighted_subattrs: WeightedAttrs = None):
-        """
-        Currently only work for artifacts below level 4.
-
-        :param weighted_subattrs:
-        :return:
-        """
         if weighted_subattrs is None:
             weighted_subattrs = self._weighted_subattrs
-        # p_set = 1 / 2
-        # p_artifact_type = 1 / len(ArtifactEnum)
-        p_main_stat = wd_p_key(self._artifact_type.mainattr_weights(), self._mainattr)
-        p_subattrs = relative_rarity_compare_subattrs(self._artifact_type, self._mainattr,
-                                                      self._level, self._subattrs,
-                                                      weighted_subattrs)
-        return p_main_stat * p_subattrs
-
-    def accurate_relative_rating(self, weighted_subattrs: WeightedAttrs = None):
-        if weighted_subattrs is None:
-            weighted_subattrs = self._weighted_subattrs
-        p_main_stat = wd_p_key(self._artifact_type.mainattr_weights(), self._mainattr)
+        p_main_stat = wd_p_key(self._artifact_type.mainattr_weights_readonly(), self._mainattr)
         p_subattrs: float
         if self._level < 4:
-            p_subattrs = -1
-            pass
+            p_subattrs = relative_rarity_compare_subattrs(self._artifact_type, self._mainattr,
+                                                          self._level, self._subattrs,
+                                                          weighted_subattrs)
         else:
             result = leveled_subattrs_distribution(self._mainattr, self._level, weighted_subattrs)
             p_subattrs = result.p_score_greater(
@@ -163,12 +146,12 @@ if __name__ == '__main__':
                                                    AttributeEnum.ATK_PCT,
                                                    AttributeEnum.ER,
                                                }))
-    art3: Artifact = Artifact.rating_only_plan(0, ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT,
+    art3: Artifact = Artifact.rating_only_plan(4, ArtifactEnum.PLUME, AttributeEnum.ATK_FLAT,
                                                ArtifactAttrs().set({
                                                    AttributeEnum.CRIT_RATE: 0.8,
                                                    AttributeEnum.ATK_PCT: 1,
-                                                   AttributeEnum.HP_FLAT: 1,
-                                                   # AttributeEnum.EM: 1,
+                                                   AttributeEnum.CRIT_DMG: 1,
+                                                   AttributeEnum.EM: 2,
                                                }))
     art4: Artifact = Artifact.rating_only_plan(20, ArtifactEnum.SANDS, AttributeEnum.ATK_PCT,
                                                ArtifactAttrs().set({
@@ -180,19 +163,15 @@ if __name__ == '__main__':
     # print(art1.expected_rating())
     # print(art1.extreme_rating())
     # print(art1.relative_rating())
-    # print(rarity_in_domain_runs(art1.relative_rating()))
     # print("======")
-    print(art2.expected_rating())
-    print(art2.extreme_rating())
-    print(art2.relative_rating())
-    # print(rarity_in_domain_runs(art2.relative_rating()))
-    print("======")
+    # print(art2.expected_rating())
+    # print(art2.extreme_rating())
+    # print(art2.relative_rating())
+    # print("======")
     print(art3.expected_rating())
     print(art3.extreme_rating())
     print(art3.relative_rating())
-    # print(rarity_in_domain_runs(art3.relative_rating()))
     print("======")
     print(art4.expected_rating())
     print(art4.extreme_rating())
-    print(art4.accurate_relative_rating())
-    # print(rarity_in_domain_runs(art4.accurate_relative_rating()))
+    print(art4.relative_rating())

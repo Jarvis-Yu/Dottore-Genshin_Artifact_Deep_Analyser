@@ -1,10 +1,9 @@
 import itertools
-from typing import Set, List, Dict
+from typing import Set, List
 
 from python_backend.artifact.artifact_attrs import ArtifactAttrs
 from python_backend.artifact.weighted_attrs import WeightedAttrs
-from python_backend.consts.terminology.artifact_consts import MAX_NUM_ATTRS, ArtifactEnum, \
-    ALL_3_ATTR_COMB, ALL_4_ATTR_COMB, P_3_SUBATTRS_ART_DOMAIN, P_4_SUBATTRS_ART_DOMAIN
+from python_backend.consts.terminology.artifact_consts import MAX_NUM_ATTRS, ArtifactEnum
 from python_backend.consts.terminology.attribute_consts import AttributeEnum, AVG_SUBATTR_RATIO
 from python_backend.helpers.random_weighted_dict_selector import wd_p_key
 
@@ -164,7 +163,7 @@ def artifact_rating_expectation(artifact_type: ArtifactEnum, mainattr: Attribute
         rating += tmp * weights.get(attr)
     # If the artifact has 3 attrs, calculate the expectation of the last unknown attribute
     if attrs.num_of_attrs() != MAX_NUM_ATTRS:
-        backup_attrs = artifact_type.subattr_weights().copy()
+        backup_attrs = artifact_type.subattr_weights_readonly().copy()
         backup_attrs.pop(mainattr, None)
         for attr in attrs.attrs():
             backup_attrs.pop(attr, None)
@@ -198,7 +197,7 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
     else:  # case when artifact has 3 sub-stats
         # Find the possible attributes that has the highest weight
         all_possible_attrs: Set[AttributeEnum] = set(attrs.attrs()).union(
-            artifact_type.subattr_weights().keys())
+            artifact_type.subattr_weights_readonly().keys())
         all_possible_attrs.discard(mainattr)
         highest_weighted_attrs: List[AttributeEnum] = []
         highest_not_in_attr: List[AttributeEnum] = []
@@ -222,58 +221,3 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
         rating += weights.get(highest_not_in_attr[0])
         rating += (chances - 1) * weights.get(highest_weighted_attrs[0])
     return rating
-
-
-def relative_rarity_compare_subattrs(artifact_type: ArtifactEnum, mainattr: AttributeEnum,
-                                     lvl: int,
-                                     attrs: ArtifactAttrs, weights: WeightedAttrs) -> float:
-    """
-    Currently only work for level 0 artifacts.
-    This is an approximation, which differs little from the actual value, but enough for reference.
-
-    :param artifact_type:
-    :param mainattr:
-    :param lvl:
-    :param attrs:
-    :param weights:
-    :return:
-    """
-
-    this_rating = artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights)
-    subattrs_except_main: Dict[AttributeEnum, float] = artifact_type.subattr_weights().copy()
-    subattrs_except_main.pop(mainattr, None)
-
-    def calculate_p(combs):
-        p_list = []
-        for comb in combs:
-            if mainattr not in comb:
-                p_comb = p_subattr_combination(subattrs_except_main, comb)
-                comb_attrs = ArtifactAttrs()
-                comb_attrs.set_avg(set(comb))
-                comb_avg_rating = artifact_rating_expectation(artifact_type, mainattr, 0,
-                                                              comb_attrs,
-                                                              weights)
-                if this_rating > comb_avg_rating:
-                    p_list.append(p_comb)
-        return p_list
-
-    p_3: List[float] = calculate_p(ALL_3_ATTR_COMB)
-    p_4: List[float] = calculate_p(ALL_4_ATTR_COMB)
-    p_3.sort()
-    p_4.sort()
-    p = P_3_SUBATTRS_ART_DOMAIN * sum(p_3) + P_4_SUBATTRS_ART_DOMAIN * sum(p_4)
-    return 1 - p
-
-
-if __name__ == '__main__':
-    a_attrs = ArtifactAttrs().set_avg({
-        AttributeEnum.CRIT_RATE,
-        AttributeEnum.CRIT_DMG,
-        AttributeEnum.ATK_PCT,
-        AttributeEnum.ATK_FLAT,
-        # AttributeEnum.ER,
-        # AttributeEnum.EM,
-    })
-    a = relative_rarity_compare_subattrs(ArtifactEnum.FLOWER, AttributeEnum.HP_FLAT, 0, a_attrs
-                                         , WeightedAttrs.crit_atk_plan())
-    print(a)

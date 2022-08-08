@@ -49,7 +49,7 @@ def p_get_mainattr(artifact_type: ArtifactEnum, mainattr: AttributeEnum) -> floa
     """
     :return: the probability of getting the `mainattr` from a random artifact of `artifact_type`.
     """
-    weights = artifact_type.mainattr_weights()
+    weights = artifact_type.mainattr_weights_readonly()
     return weights.get(mainattr, 0) / wd_total_weight(weights)
 
 
@@ -81,7 +81,7 @@ def p_y_useful_given_x(artifact_type: ArtifactEnum, mainattr: AttributeEnum, x: 
     func_called(__fpath__ + "p_y_useful_given_x")
 
     def brute_force() -> float:
-        possible_sub_attr: Dict = artifact_type.subattr_weights().copy()
+        possible_sub_attr: Dict = artifact_type.subattr_weights_readonly().copy()
         possible_sub_attr.pop(mainattr, None)
         subattrs: Set = set()  # current subattrs
         p_success = []  # list of prob of all satisfying cases
@@ -120,7 +120,7 @@ def p_y_useful_given_x(artifact_type: ArtifactEnum, mainattr: AttributeEnum, x: 
         return sum(p_success)
 
     def dynamic_programming() -> float:
-        possible_sub_attrs: Dict = artifact_type.subattr_weights().copy()
+        possible_sub_attrs: Dict = artifact_type.subattr_weights_readonly().copy()
         possible_sub_attrs.pop(mainattr, None)
         p_success = []  # list of prob of all satisfying cases
         memorized_data = [{}, {}]
