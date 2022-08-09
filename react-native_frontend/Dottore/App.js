@@ -16,7 +16,14 @@ export default function App() {
   const [data, setData] = useState({ val1: -1, val2: -1 });
 
   async function getSimpleJson() {
-    const data = await getBackendJson({ route: "/simple_json" });
+    // const data = await getBackendJson({ route: "/simple_json" });
+    const data = await postBackendJson({
+      route: "/repeat",
+      args: {
+        val1: 5,
+        val2: 4,
+      },
+    });
     if (data.ok) {
       setData(data.data);
     } else {
@@ -31,7 +38,7 @@ export default function App() {
   return (
     <ThemeContext.Provider value={darkMode ? darkTheme : lightTheme}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="RootTabs">
+        <Stack.Navigator initialRouteName="Single Artifact Rating">
           <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />
           <Stack.Screen name="Single Artifact Rating" component={SingleArtifactRatingScreen} />
           {/* <Stack.Screen
