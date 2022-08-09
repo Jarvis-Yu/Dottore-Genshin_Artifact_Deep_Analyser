@@ -90,48 +90,55 @@ export function SingleArtifactRatingScreen({ navigation }) {
   function SelectOne({ data, set = (f) => f, title = "Sample Title:" }) {
     const [lastOne, setLastOne] = useState("");
     const [value, setValue] = useState("");
-    const propList = {};
-    // data.forEach((val) => {
-    //   propList[val.title] = {
-    //     title: val.title,
-    //     value: val.value || val.title,
-    //     color: notSelected,
-    //   };
-    // });
+    const [propList, setPropList] = useState({});
     const origianlData = ({ last = "" }) => {
-      if (propList[last]) {
-        propList[last].title = val;
-        propList[last].value = val;
-        propList[last].color = notSelected;
+      const tmpList = propList;
+      if (tmpList[last]) {
+        tmpList[last].color = notSelected;
       }
-      return propList;
+      return tmpList;
     };
-    const [localStyles, setLocalStyles] = useState(origianlData({ lastOne }));
+    // const [localStyles, setLocalStyles] = useState(origianlData({ lastOne }));
     const updateStates = (item) => {
-      const k = origianlData({ lastOne });
+      const k = origianlData({ last: lastOne });
       setLastOne(item);
       setValue(item);
-      set(propList[item].value);
-      k[item]["color"] = selected;
-      setLocalStyles(k);
+      if (item !== "") {
+        set(propList[item].value);
+        k[item]["color"] = selected;
+      } else {
+        set("")
+      }
+      setPropList(k);
     };
     const renderItem = ({ item }) => {
-      propList[item.title] = {
-        title: item.title,
-        value: item.value || item.title,
-        color: notSelected,
-      };
+      if (lastOne !== "" && !data.map((item) => item.title === lastOne).reduce((a, b) => a || b)) {
+        updateStates("");
+        // console.log("A", lastOne);
+        // console.log("B", data);
+        // setPropList(origianlData({ last: lastOne }));
+        // setLastOne("");
+      }
+      tmpList = propList;
+      if (!tmpList[item.title]) {
+        tmpList[item.title] = {
+          title: item.title,
+          value: item.value || item.title,
+          color: notSelected,
+        };
+        setPropList(tmpList);
+      }
       return (
         <TouchableHighlight
           style={{ marginRight: 10 }}
           underlayColor={selected}
           onPress={() => {
-            updateStates(localStyles[item.title].title);
+            updateStates(propList[item.title].title);
           }}
           key={item.title}
         >
-          <View style={{ backgroundColor: localStyles[item.title].color, padding: 5 }}>
-            <Text style={{ color: "#FFFFFF" }}>{localStyles[item.title].title}</Text>
+          <View style={{ backgroundColor: propList[item.title].color, padding: 5 }}>
+            <Text style={{ color: "#FFFFFF" }}>{propList[item.title].title}</Text>
           </View>
         </TouchableHighlight>
       );
@@ -154,23 +161,23 @@ export function SingleArtifactRatingScreen({ navigation }) {
     );
   }
 
-  // useEffect(() => {
-  //   if (artifactType !== "") {
-  //     const k = async (set) => {
-  //       const resp = await postBackendJson({
-  //         route: "/artifact/type-to-mainattrs",
-  //         args: {
-  //           type: artifactType,
-  //         },
-  //       });
-  //       if (resp.ok) {
-  //         console.log(resp.data);
-  //         setArtifactMainAttrs([{ title: "a" }]);
-  //       }
-  //     };
-  //     k();
-  //   }
-  // }, [artifactType]);
+  useEffect(() => {
+    if (artifactType !== "") {
+      const k = async (set) => {
+        const resp = await postBackendJson({
+          route: "/artifact/type-to-mainattrs",
+          args: {
+            type: artifactType,
+          },
+        });
+        if (resp.ok) {
+          // console.log(resp.data);
+          setArtifactMainAttrs(resp.data);
+        }
+      };
+      k();
+    }
+  }, [artifactType]);
 
   return (
     <View>

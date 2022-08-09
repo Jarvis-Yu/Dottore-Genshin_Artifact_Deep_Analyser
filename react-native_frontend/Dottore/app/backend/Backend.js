@@ -8,7 +8,7 @@ export async function getBackendJson({ route = "/" }) {
   return await fetch(localHost + route, { method: "GET" })
     .then((resp) => resp.json())
     .then((resp_json) => {
-      console.log("[i] Backend.getBackendJson:", resp_json);
+      // console.log("[i] Backend.getBackendJson:", resp_json);
       return { data: resp_json, ok: true };
     })
     .catch((error) => {
@@ -22,7 +22,7 @@ export async function getBackendJson({ route = "/" }) {
  */
 export async function postBackendJson({ route = "/", args = {} }) {
   body = JSON.stringify(args)
-  console.log("[i] Backend.postBackendJson.body:", body);
+  // console.log("[i] Backend.postBackendJson.body:", body);
   const k = await fetch(localHost + route, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,7 +30,7 @@ export async function postBackendJson({ route = "/", args = {} }) {
   })
     .then((resp) => resp.json())
     .then((resp_json) => {
-      console.log("[i] Backend.postBackendJson:", resp_json);
+      // console.log("[i] Backend.postBackendJson:", resp_json);
       return { data: resp_json, ok: true };
     })
     .catch((error) => {
