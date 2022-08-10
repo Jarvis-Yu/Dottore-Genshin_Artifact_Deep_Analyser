@@ -10,6 +10,11 @@ import { darkTheme, lightTheme, ThemeContext } from "./app/styles/Styles";
 
 const Stack = createNativeStackNavigator();
 
+/*
+follow: https://docs.expo.dev/build/setup/
+to build app
+*/
+
 export default function App() {
   console.log("[i] App: rendered");
   const [darkMode, setDarkMode] = useState(false);
