@@ -115,7 +115,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       if (currentSelected[key]) {
         // remove key from value
         Object.keys(currentSelected).forEach((thisKey) => {
-          if (thisKey !== key) {
+          if (thisKey !== key && data[thisKey]) {
             newSelected[thisKey] = currentSelected[thisKey];
           }
         });
@@ -127,12 +127,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
         });
         newSelected[key] = data[key];
         updated = true;
-        // setValue(newSelected);
-        // set(newSelected);
       }
       if (updated) {
-        setValue(newSelected);
-        set(newSelected);
         const tmpDict = {};
         Object.keys(data).forEach((key) => {
           tmpDict[key] = {
@@ -143,6 +139,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
         Object.keys(newSelected).forEach((key) => {
           tmpDict[key].color = selected;
         });
+        setValue(newSelected);
+        set(newSelected);
         setPropDict(tmpDict);
       }
     };
@@ -191,7 +189,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
   }
 
   function MultipleSlider({ data, set = (f) => f, title = "Sample Title:" }) {
-    console.log("==========");
     const [value, setValue] = useState({});
     const updateValue = (the_key, val) => {
       const tmpVal = {};
@@ -201,7 +198,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
         }
       });
       tmpVal[the_key] = val;
-      // console.log("Update:", tmpVal);
       setValue(tmpVal);
       set(tmpVal);
     };
@@ -209,7 +205,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
       const min_val = item.min_val;
       const max_val = item.max_val * (1 + Math.floor(artifactLevel / 4));
       const step = item.step;
-      console.log("Rendering:", item.key);
       if (!value[item.key]) {
         updateValue(item.key, min_val);
       } else if (value[item.key] > max_val + step / 2) {
@@ -303,7 +298,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         {Object.keys(artifactSelectedSubAttrs)}]
       </Text>
       {Object.keys(artifactSubAttr).map((key) => (
-        <Text>
+        <Text key={key}>
           [{key}, {artifactSubAttr[key]}]
         </Text>
       ))}
