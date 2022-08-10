@@ -13,60 +13,10 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactSubAttr, setArtifactSubAttr] = useState("");
 
   const [artifactMainAttrs, setArtifactMainAttrs] = useState([]);
+  const [artifactSubAttrs, setArtifactSubAttrs] = useState([]);
+  const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState([]);
   const selected = "#000088";
   const notSelected = "#8888FF";
-
-  // const ArtifactTypeComponent = () => {
-  //   const flowerTitle = "Flower";
-  //   const plumeTitle = "Plume";
-  //   const sandsTitle = "Sands";
-  //   const gobletTitle = "Goblet";
-  //   const circletTitle = "Circlet";
-  //   const [flowerColor, setFlowerColor] = useState(notSelected);
-  //   const [plumeColor, setPlumeColor] = useState(notSelected);
-  //   const [sandsColor, setSandsColor] = useState(notSelected);
-  //   const [gobletColor, setGobletColor] = useState(notSelected);
-  //   const [circletColor, setCircletColor] = useState(notSelected);
-  //   const updateStates = (kind) => {
-  //     const ifStatement = (title, setColor) => {
-  //       if (kind === title) {
-  //         setArtifactType(title);
-  //         setColor(selected);
-  //       } else {
-  //         setColor(notSelected);
-  //       }
-  //     };
-  //     ifStatement(flowerTitle, setFlowerColor);
-  //     ifStatement(plumeTitle, setPlumeColor);
-  //     ifStatement(sandsTitle, setSandsColor);
-  //     ifStatement(gobletTitle, setGobletColor);
-  //     ifStatement(circletTitle, setCircletColor);
-  //   };
-  //   const LocalButton = (title, color) => (
-  //     <TouchableHighlight
-  //       underlayColor={selected}
-  //       onPress={() => {
-  //         updateStates(title);
-  //       }}
-  //     >
-  //       <View style={{ backgroundColor: color, padding: 5 }}>
-  //         <Text style={{ color: "#FFFFFF" }}>{title}</Text>
-  //       </View>
-  //     </TouchableHighlight>
-  //   );
-  //   return (
-  //     <View style={{ margin: 10 }}>
-  //       <Text style={{ fontSize: 16 }}>Artifact kind is [{artifactType}]</Text>
-  //       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-  //         {LocalButton(flowerTitle, flowerColor)}
-  //         {LocalButton(plumeTitle, plumeColor)}
-  //         {LocalButton(sandsTitle, sandsColor)}
-  //         {LocalButton(gobletTitle, gobletColor)}
-  //         {LocalButton(circletTitle, circletColor)}
-  //       </View>
-  //     </View>
-  //   );
-  // };
 
   const LevelComponent = () => {
     return (
@@ -90,13 +40,13 @@ export function SingleArtifactRatingScreen({ navigation }) {
   function SelectOne({ data, set = (f) => f, title = "Sample Title:" }) {
     const [lastOne, setLastOne] = useState("");
     const [value, setValue] = useState("");
-    const [propList, setPropList] = useState({});
+    const [propDict, setPropDict] = useState({});
     const origianlData = ({ last = "" }) => {
-      const tmpList = propList;
-      if (tmpList[last]) {
-        tmpList[last].color = notSelected;
+      const tmpDict = propDict;
+      if (tmpDict[last]) {
+        tmpDict[last].color = notSelected;
       }
-      return tmpList;
+      return tmpDict;
     };
     // const [localStyles, setLocalStyles] = useState(origianlData({ lastOne }));
     const updateStates = (item) => {
@@ -104,58 +54,136 @@ export function SingleArtifactRatingScreen({ navigation }) {
       setLastOne(item);
       setValue(item);
       if (item !== "") {
-        set(propList[item].value);
+        set(propDict[item].value);
         k[item]["color"] = selected;
       } else {
-        set("")
+        set("");
       }
-      setPropList(k);
+      setPropDict(k);
     };
     const renderItem = ({ item }) => {
-      if (lastOne !== "" && !data.map((item) => item.title === lastOne).reduce((a, b) => a || b)) {
-        updateStates("");
-        // console.log("A", lastOne);
-        // console.log("B", data);
-        // setPropList(origianlData({ last: lastOne }));
-        // setLastOne("");
-      }
-      tmpList = propList;
-      if (!tmpList[item.title]) {
-        tmpList[item.title] = {
+      tmpDict = propDict;
+      if (!tmpDict[item.title]) {
+        tmpDict[item.title] = {
           title: item.title,
           value: item.value || item.title,
           color: notSelected,
         };
-        setPropList(tmpList);
+        setPropDict(tmpDict);
       }
       return (
         <TouchableHighlight
           style={{ marginRight: 10 }}
           underlayColor={selected}
           onPress={() => {
-            updateStates(propList[item.title].title);
+            updateStates(propDict[item.title].title);
           }}
           key={item.title}
         >
-          <View style={{ backgroundColor: propList[item.title].color, padding: 5 }}>
-            <Text style={{ color: "#FFFFFF" }}>{propList[item.title].title}</Text>
+          <View style={{ backgroundColor: propDict[item.title].color, padding: 5 }}>
+            <Text style={{ color: "#FFFFFF" }}>{propDict[item.title].title}</Text>
           </View>
         </TouchableHighlight>
       );
     };
+    if (lastOne !== "" && !data.map((item) => item.title === lastOne).reduce((a, b) => a || b)) {
+      updateStates("");
+    }
     return (
       <View style={{ margin: 10 }}>
-        <Text style={{ fontSize: 16 }}>
-          {title} [{value}]
-        </Text>
-        <ScrollView
-          horizontal={true}
-          decelerationRate={0}
-          scrollEventThrottle={16}
-          snapToAlignment="center"
-          showsHorizontalScrollIndicator={false}
-        >
+        {data.length > 0 && (
+          <Text style={{ fontSize: 16 }}>
+            {title} [{value}]
+          </Text>
+        )}
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {data && data.map((item) => renderItem({ item }))}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  function SelectMultiple({ data, set = (f) => f, title = "Sample Title:" }, maxNum = 4) {
+    const [value, setValue] = useState({});
+    const [propDict, setPropDict] = useState({});
+    const updateStates = (key) => {
+      const currentSelected = value;
+      const newSelected = {};
+      let updated = false;
+      if (currentSelected[key]) {
+        // remove key from value
+        Object.keys(currentSelected).forEach((thisKey) => {
+          if (thisKey !== key) {
+            newSelected[thisKey] = currentSelected[thisKey];
+          }
+        });
+        updated = true;
+      } else if (Object.keys(currentSelected).length < maxNum) {
+        // add key to value
+        Object.keys(currentSelected).forEach((thisKey) => {
+          newSelected[thisKey] = currentSelected[thisKey];
+        });
+        newSelected[key] = true;
+        updated = true;
+        // setValue(newSelected);
+        // set(newSelected);
+      }
+      if (updated) {
+        setValue(newSelected);
+        set(newSelected);
+        const tmpDict = {};
+        Object.keys(data).forEach((key) => {
+          tmpDict[key] = {
+            key: key,
+            color: notSelected,
+          };
+        });
+        Object.keys(newSelected).forEach((key) => {
+          tmpDict[key].color = selected;
+        });
+        setPropDict(tmpDict);
+      }
+    };
+    const renderItem = ({ item }) => {
+      tmpDict = propDict;
+      if (!tmpDict[item.key]) {
+        tmpDict[item.key] = {
+          key: item.key,
+          color: notSelected,
+        };
+        setPropDict(tmpDict);
+      }
+      return (
+        <TouchableHighlight
+          style={{ marginRight: 10 }}
+          underlayColor={selected}
+          onPress={() => {
+            updateStates(item.key);
+          }}
+          key={item.key}
+        >
+          <View style={{ backgroundColor: propDict[item.key].color, padding: 5 }}>
+            <Text style={{ color: "#FFFFFF" }}>{item.key}</Text>
+          </View>
+        </TouchableHighlight>
+      );
+    };
+    Object.keys(value).forEach((key) => {
+      if (!data[key]) {
+        updateStates(key);
+      }
+    });
+    return (
+      <View style={{ margin: 10 }}>
+        {Object.keys(data).length == 0 && Object.keys(value).length !== 0 && setValue({})}
+        {Object.keys(data).length > 0 && (
+          <Text style={{ fontSize: 16 }}>
+            {title} [{Object.keys(value)}]
+          </Text>
+        )}
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {data && Object.keys(data).map((key) => renderItem({ item: data[key] }))}
+          {/* {data && data.map((item) => renderItem({ item }))} */}
         </ScrollView>
       </View>
     );
@@ -163,7 +191,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
 
   useEffect(() => {
     if (artifactType !== "") {
-      const k = async (set) => {
+      const f = async () => {
         const resp = await postBackendJson({
           route: "/artifact/type-to-mainattrs",
           args: {
@@ -171,18 +199,38 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
-          // console.log(resp.data);
           setArtifactMainAttrs(resp.data);
         }
       };
-      k();
+      f();
     }
   }, [artifactType]);
+
+  useEffect(() => {
+    if (artifactMainAttr !== "") {
+      const f = async () => {
+        const resp = await postBackendJson({
+          route: "/artifact/mainattr-to-subattrs",
+          args: {
+            mainattr: artifactMainAttr,
+            level: artifactLevel,
+          },
+        });
+        if (resp.ok) {
+          setArtifactSubAttrs(resp.data);
+        }
+      };
+      f();
+    } else {
+      setArtifactSubAttrs({});
+    }
+  }, [artifactMainAttr]);
 
   return (
     <View>
       <Text>
-        [{artifactLevel}][{artifactType}][{artifactMainAttr}][{artifactSubAttr}]
+        [{artifactLevel}][{artifactType}][{artifactMainAttr}][
+        {Object.keys(artifactSelectedSubAttrs)}]
       </Text>
       {LevelComponent()}
       {SelectOne({
@@ -197,9 +245,14 @@ export function SingleArtifactRatingScreen({ navigation }) {
         set: setArtifactType,
       })}
       {SelectOne({
-        title: "TMP",
+        title: "Main attribute is",
         data: artifactMainAttrs,
         set: setArtifactMainAttr,
+      })}
+      {SelectMultiple({
+        title: "Sub attribues",
+        data: artifactSubAttrs,
+        set: setArtifactSelectedSubAttrs,
       })}
       <Button
         title="submit"

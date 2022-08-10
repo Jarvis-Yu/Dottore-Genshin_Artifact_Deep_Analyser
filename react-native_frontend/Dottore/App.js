@@ -48,9 +48,9 @@ export default function App() {
           /> */}
         </Stack.Navigator>
       </NavigationContainer>
-      <Text>
+      {/* <Text>
         {data?.val1}, {data?.val2}
-      </Text>
+      </Text> */}
     </ThemeContext.Provider>
   );
 }
