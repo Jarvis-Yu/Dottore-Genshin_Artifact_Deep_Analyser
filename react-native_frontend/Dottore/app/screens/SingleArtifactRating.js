@@ -235,6 +235,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
                 onValueChange={(val) => {
                   updateValue(item.key, val[0]);
                 }}
+                thumbStyle={{ backgroundColor: selected }}
+                trackStyle={{ backgroundColor: notSelected }}
+                minimumTrackTintColor={notSelected}
               />
             </View>
           </View>
@@ -293,7 +296,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
 
   return (
     <View>
-      <Text>
+      {/* <Text>
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
       </Text>
@@ -301,7 +304,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         <Text key={key}>
           [{key}, {artifactSubAttr[key]}]
         </Text>
-      ))}
+      ))} */}
       {LevelComponent()}
       {SelectOne({
         title: "Artifact kind is",
@@ -332,6 +335,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       })}
       <Button
         title="submit"
+        disabled={Object.keys(artifactSubAttr).length < (artifactLevel >= 4 ? 4 : 3)}
         onPress={() => {
           alert("Submitted");
         }}
