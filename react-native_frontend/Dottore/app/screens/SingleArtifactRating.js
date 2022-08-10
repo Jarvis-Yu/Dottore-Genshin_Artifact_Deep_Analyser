@@ -28,7 +28,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
           maximumValue={20}
           step={1}
           value={artifactLevel}
-          onValueChange={setArtifactLevel}
+          onValueChange={(val) => {
+            setArtifactLevel(val[0]);
+          }}
           thumbStyle={{ backgroundColor: selected }}
           trackStyle={{ backgroundColor: notSelected }}
           minimumTrackTintColor={notSelected}
@@ -103,7 +105,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     );
   }
 
-  function SelectMultiple({ data, set = (f) => f, title = "Sample Title:" }, maxNum = 4) {
+  function SelectMultiple({ data, set = (f) => f, title = "Sample Title:", maxNum = 4 }) {
     const [value, setValue] = useState({});
     const [propDict, setPropDict] = useState({});
     const updateStates = (key) => {
@@ -123,7 +125,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         Object.keys(currentSelected).forEach((thisKey) => {
           newSelected[thisKey] = currentSelected[thisKey];
         });
-        newSelected[key] = true;
+        newSelected[key] = data[key];
         updated = true;
         // setValue(newSelected);
         // set(newSelected);
@@ -145,8 +147,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
       }
     };
     const renderItem = ({ item }) => {
-      tmpDict = propDict;
-      if (!tmpDict[item.key]) {
+      const tmpDict = propDict;
+      if (!tmpDict[item.key] || (tmpDict[item.key].color === selected && !value[item.key])) {
         tmpDict[item.key] = {
           key: item.key,
           color: notSelected,
@@ -183,8 +185,76 @@ export function SingleArtifactRatingScreen({ navigation }) {
         )}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           {data && Object.keys(data).map((key) => renderItem({ item: data[key] }))}
-          {/* {data && data.map((item) => renderItem({ item }))} */}
         </ScrollView>
+      </View>
+    );
+  }
+
+  function MultipleSlider({ data, set = (f) => f, title = "Sample Title:" }) {
+    console.log("==========");
+    const [value, setValue] = useState({});
+    const updateValue = (the_key, val) => {
+      const tmpVal = {};
+      Object.keys(value).forEach((key) => {
+        if (data[key]) {
+          tmpVal[key] = value[key];
+        }
+      });
+      tmpVal[the_key] = val;
+      // console.log("Update:", tmpVal);
+      setValue(tmpVal);
+      set(tmpVal);
+    };
+    const renderItem = ({ item }) => {
+      const min_val = item.min_val;
+      const max_val = item.max_val * (1 + Math.floor(artifactLevel / 4));
+      const step = item.step;
+      console.log("Rendering:", item.key);
+      if (!value[item.key]) {
+        updateValue(item.key, min_val);
+      } else if (value[item.key] > max_val + step / 2) {
+        updateValue(item.key, max_val);
+      }
+      return (
+        <View key={item.key} style={{ marginBottom: 5 }}>
+          <View style={{ flexDirection: "row" }}>
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+              style={{ flex: 1 }}
+            >
+              <View style={{ padding: 5, alignContent: "center" }}>
+                <Text>{item.key}</Text>
+                <Text>
+                  {value[item.key] &&
+                    (min_val < 1 ? value[item.key] * 100 : value[item.key]).toFixed(1)}
+                </Text>
+              </View>
+            </ScrollView>
+            <View style={{ flex: 4 }}>
+              <Slider
+                minimumValue={min_val}
+                maximumValue={max_val}
+                step={item.step}
+                value={value[item.key]}
+                onValueChange={(val) => {
+                  updateValue(item.key, val[0]);
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      );
+    };
+    return (
+      <View style={{ margin: 10 }}>
+        {Object.keys(data).length == 0 && Object.keys(value).length !== 0 && setValue({})}
+        {/* {Object.keys(data).length > 0 && (
+          <Text style={{ fontSize: 16 }}>
+            {title} [{Object.keys(value)}]
+          </Text>
+        )} */}
+        {data && Object.keys(data).map((key) => renderItem({ item: data[key] }))}
       </View>
     );
   }
@@ -232,6 +302,11 @@ export function SingleArtifactRatingScreen({ navigation }) {
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
       </Text>
+      {Object.keys(artifactSubAttr).map((key) => (
+        <Text>
+          [{key}, {artifactSubAttr[key]}]
+        </Text>
+      ))}
       {LevelComponent()}
       {SelectOne({
         title: "Artifact kind is",
@@ -250,9 +325,15 @@ export function SingleArtifactRatingScreen({ navigation }) {
         set: setArtifactMainAttr,
       })}
       {SelectMultiple({
-        title: "Sub attribues",
+        title: "Sub attribues are",
         data: artifactSubAttrs,
         set: setArtifactSelectedSubAttrs,
+        maxNum: 4,
+      })}
+      {MultipleSlider({
+        title: "TMP",
+        data: artifactSelectedSubAttrs,
+        set: setArtifactSubAttr,
       })}
       <Button
         title="submit"
