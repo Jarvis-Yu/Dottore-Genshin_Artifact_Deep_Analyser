@@ -191,7 +191,7 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
                 best_attrs = [attr]
             elif weights.get(attr) == weights.get(best_attrs[0]):
                 best_attrs.append(attr)
-            rating += weights.get(attr)  # btw, add the current rating
+            rating += weights.get(attr) * attrs.get_scale(attr)  # btw, add the current rating
         # Optimize the rating in extreme conditions
         rating += chances * weights.get(best_attrs[0])
     else:  # case when artifact has 3 sub-stats
@@ -217,7 +217,7 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
                 elif weight_attr == weights.get(highest_not_in_attr[0]):
                     highest_not_in_attr.append(attr)
         for attr in attrs.attrs():
-            rating += weights.get(attr)
+            rating += weights.get(attr) * attrs.get_scale(attr)
         rating += weights.get(highest_not_in_attr[0])
         rating += (chances - 1) * weights.get(highest_weighted_attrs[0])
     return rating

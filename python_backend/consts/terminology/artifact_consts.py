@@ -23,7 +23,8 @@ class _ArtifactConsts:
         AttributeEnum.ER: 100,
     }
 
-    def __init__(self, name: str, mainattr_weights: Dict[AttributeEnum, float]):
+    def __init__(self, short_name: str, name: str, mainattr_weights: Dict[AttributeEnum, float]):
+        self.SHORT_NAME = short_name
         self.NAME = name
         self.MAINATTR_WEIGHTS = mainattr_weights
 
@@ -39,18 +40,21 @@ ALL_4_ATTR_COMB = list(itertools.combinations(_ArtifactConsts.SUBATTR_WEIGHTS.ke
 
 class ArtifactEnum(Enum):
     FLOWER = _ArtifactConsts(
+        "Flower",
         "Flower of Life",
         {
             AttributeEnum.HP_FLAT: 100,
         },
     )
     PLUME = _ArtifactConsts(
+        "Plume",
         "Plume of Death",
         {
             AttributeEnum.ATK_FLAT: 100,
         },
     )
     SANDS = _ArtifactConsts(
+        "Sands",
         "Sands of Eon",
         {
             AttributeEnum.HP_PCT: 26.68,
@@ -61,6 +65,7 @@ class ArtifactEnum(Enum):
         },
     )
     GOBLET = _ArtifactConsts(
+        "Goblet",
         "Goblet of Eonothem",
         {
             AttributeEnum.HP_PCT: 21.25,
@@ -78,6 +83,7 @@ class ArtifactEnum(Enum):
         },
     )
     CIRCLET = _ArtifactConsts(
+        "Circlet",
         "Circlet of Logos",
         {
             AttributeEnum.HP_PCT: 22,
@@ -93,6 +99,9 @@ class ArtifactEnum(Enum):
     def name(self) -> str:
         return self.value.NAME
 
+    def short_name(self) -> str:
+        return self.value.SHORT_NAME
+
     def mainattr_weights_readonly(self) -> Dict[AttributeEnum, float]:
         """
         ADD `.copy()` IF NEED CHANGE
@@ -104,6 +113,13 @@ class ArtifactEnum(Enum):
         ADD `.copy()` IF NEED CHANGE
         """
         return self.value.SUBATTR_WEIGHTS
+
+    @classmethod
+    def find_with_short_name(cls, short_name: str):
+        for item in ArtifactEnum:
+            if item.short_name() == short_name:
+                return item
+        return None
 
 
 if __name__ == '__main__':
