@@ -11,6 +11,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactType, setArtifactType] = useState("");
   const [artifactMainAttr, setArtifactMainAttr] = useState("");
   const [artifactSubAttr, setArtifactSubAttr] = useState("");
+  const [result, setResult] = useState({});
 
   const [artifactMainAttrs, setArtifactMainAttrs] = useState([]);
   const [artifactSubAttrs, setArtifactSubAttrs] = useState([]);
@@ -222,7 +223,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
                 <Text>{item.key}</Text>
                 <Text>
                   {value[item.key] &&
-                    (min_val < 1 ? value[item.key] * 100 : value[item.key]).toFixed(1)}
+                    (min_val < 1 ? (value[item.key] * 100).toFixed(1) : (value[item.key]).toFixed(0))}
                 </Text>
               </View>
             </ScrollView>
@@ -295,7 +296,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
   }, [artifactMainAttr]);
 
   return (
-    <View>
+    <ScrollView>
       {/* <Text>
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
@@ -337,9 +338,42 @@ export function SingleArtifactRatingScreen({ navigation }) {
         title="submit"
         disabled={Object.keys(artifactSubAttr).length < (artifactLevel >= 4 ? 4 : 3)}
         onPress={() => {
+          const post = {
+            level: artifactLevel,
+            kind: artifactType,
+            mainattr: artifactMainAttr,
+            subattrs: artifactSubAttr,
+          };
+          const f = async (post) => {
+            const resp = await postBackendJson({
+              route: "/artifact/get_all_info",
+              args: post,
+            });
+            if (resp.ok) {
+              setResult(resp.data);
+              console.log(resp.data);
+            }
+          };
+          f(post);
+          // console.log(post)
           alert("Submitted");
         }}
       />
-    </View>
+      {Object.keys(result).length > 0 && (
+        <View>
+          <Text>On average:</Text>
+          <Text>
+            {result.art_runs.toFixed(0)} domain runs are needed to obtain an artifact like this.
+          </Text>
+          <Text>
+            {((1 - result.art_relative) * 100).toFixed(3)}% {artifactType} of the same set and same
+            level are not as good as this one.
+          </Text>
+          <Text>{result.art_curr.toFixed(1)} is the current score.</Text>
+          <Text>{result.art_expect.toFixed(1)} is the expected score at level 20.</Text>
+          <Text>{result.art_extreme.toFixed(1)} is the best score it can get at level 20.</Text>
+        </View>
+      )}
+    </ScrollView>
   );
 }
