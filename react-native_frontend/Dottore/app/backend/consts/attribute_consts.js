@@ -141,14 +141,19 @@ export const AttributeEnum = {
   GEO_DB: new AttributeConsts("Geo", "Geo DMG Bonus", (mainattr_max_val = 0.466)),
   PHYSICAL_DB: new AttributeConsts("Physical", "Physical DMG Bonus", (mainattr_max_val = 0.466)),
   HEALING_BONUS: new AttributeConsts("Healing Bonus", "Healing Bonus%", (mainattr_max_val = 0.359)),
-  find_with_short_name: (short_name) => {
-    let result = undefined;
-    Object.keys(AttributeEnum).some((key) => {
-      if (AttributeEnum[key].short_name && AttributeEnum[key].short_name === short_name) {
-        result = AttributeEnum[key];
-        return true;
-      }
-    });
-    return result;
-  },
 };
+
+/**
+ * @param {string} short_name 
+ * @returns {AttributeEnum}
+ */
+export function AttributeEnum_find_with_short_name(short_name) {
+  let result = undefined;
+  Object.keys(AttributeEnum).some((key) => {
+    if (AttributeEnum[key].short_name === short_name) {
+      result = AttributeEnum[key];
+      return true;
+    }
+  });
+  return result;
+}
