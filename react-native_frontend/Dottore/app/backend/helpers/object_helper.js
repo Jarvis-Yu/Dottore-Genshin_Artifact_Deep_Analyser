@@ -10,3 +10,13 @@ export function copy_object(object) {
   });
   return new_object;
 }
+
+/**
+ * @param {Object<string, A>} object 
+ * @param {string} key 
+ * @param {A} alternative 
+ * @returns {A}
+ */
+export function get_or(object, key, alternative) {
+  return (object[key] ? object[key] : alternative)
+}

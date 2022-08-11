@@ -1,5 +1,5 @@
 import { AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
-import { copy_object } from "../helpers/copy_object";
+import { copy_object, get_or } from "../helpers/object_helper";
 
 export class ArtifactAttrs {
   #attrs;
@@ -34,21 +34,21 @@ export class ArtifactAttrs {
    * @param {number} scale
    */
   add(attr, scale) {
-    this.#attrs[attr] = (this.#attrs[attr] ? this.#attrs[attr] : 0) + scale;
+    this.#attrs[attr] = get_or(this.#attrs, attr, 0) + scale;
   }
 
   get num_of_attrs() {
-    return Object.keys(this.#attrs).length
+    return Object.keys(this.#attrs).length;
   }
 
   get attrs() {
-    return Object.keys(this.#attrs)
+    return Object.keys(this.#attrs);
   }
 
   /**
    * @param {string} attr AttributeEnum
    */
   get_scale(attr) {
-    return this.#attrs[attr]
+    return this.#attrs[attr];
   }
 }
