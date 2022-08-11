@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Button, ScrollView, Text, TouchableHighlight, View } from "react-native";
+import { Button, ScrollView, Switch, Text, TouchableHighlight, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Slider } from "@miblanchard/react-native-slider";
 import { postBackendJson } from "../backend/Backend";
+import { LIST_SUBATTR_RATIO } from "../backend/consts/attribute_consts";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -11,6 +12,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactType, setArtifactType] = useState("");
   const [artifactMainAttr, setArtifactMainAttr] = useState("");
   const [artifactSubAttr, setArtifactSubAttr] = useState("");
+  const [specificSet, setSpecificSet] = useState(true);
   const [result, setResult] = useState({});
 
   const [artifactMainAttrs, setArtifactMainAttrs] = useState([]);
@@ -21,7 +23,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
 
   const LevelComponent = () => {
     return (
-      <View style={{ margin: 10 }}>
+      <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
         <Text style={{ fontSize: 16 }}>Artifact level is [{artifactLevel}]</Text>
         <Slider
           // animateTransitions
@@ -93,7 +95,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       updateStates("");
     }
     return (
-      <View style={{ margin: 10 }}>
+      <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
         {data.length > 0 && (
           <Text style={{ fontSize: 16 }}>
             {title} [{value}]
@@ -175,7 +177,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       }
     });
     return (
-      <View style={{ margin: 10 }}>
+      <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
         {Object.keys(data).length == 0 && Object.keys(value).length !== 0 && setValue({})}
         {Object.keys(data).length > 0 && (
           <Text style={{ fontSize: 16 }}>
@@ -223,7 +225,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
                 <Text>{item.key}</Text>
                 <Text>
                   {value[item.key] &&
-                    (min_val < 1 ? (value[item.key] * 100).toFixed(1) : (value[item.key]).toFixed(0))}
+                    (min_val < 1 ? (value[item.key] * 100).toFixed(1) : value[item.key].toFixed(0))}
                 </Text>
               </View>
             </ScrollView>
@@ -246,7 +248,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       );
     };
     return (
-      <View style={{ margin: 10 }}>
+      <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
         {Object.keys(data).length == 0 && Object.keys(value).length !== 0 && setValue({})}
         {/* {Object.keys(data).length > 0 && (
           <Text style={{ fontSize: 16 }}>
@@ -295,6 +297,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     }
   }, [artifactMainAttr]);
 
+  console.log(typeof LIST_SUBATTR_RATIO)
   return (
     <ScrollView>
       {/* <Text>
@@ -334,6 +337,17 @@ export function SingleArtifactRatingScreen({ navigation }) {
         data: artifactSelectedSubAttrs,
         set: setArtifactSubAttr,
       })}
+      {Object.keys(artifactSelectedSubAttrs).length > 0 && (
+        <View style={{ flexDirection: "row", marginHorizontal: 10, marginVertical: 0 }}>
+          <Text style={{ flex: 1 }}>Specific Set?</Text>
+          <Switch
+            trackColor={{ false: notSelected, true: selected }}
+            value={specificSet}
+            onValueChange={() => setSpecificSet((previousState) => !previousState)}
+            style={{ flex: 4 }}
+          />
+        </View>
+      )}
       <Button
         title="submit"
         disabled={Object.keys(artifactSubAttr).length < (artifactLevel >= 4 ? 4 : 3)}
@@ -356,18 +370,19 @@ export function SingleArtifactRatingScreen({ navigation }) {
           };
           f(post);
           // console.log(post)
-          alert("Submitted");
+          // alert("Submitted");
         }}
       />
       {Object.keys(result).length > 0 && (
         <View>
           <Text>On average:</Text>
           <Text>
-            {result.art_runs.toFixed(0)} domain runs are needed to obtain an artifact like this.
+            {(result.art_runs / (specificSet ? 1 : 2)).toFixed(0)} domain runs are needed to obtain
+            an artifact like this.
           </Text>
           <Text>
-            {((1 - result.art_relative) * 100).toFixed(3)}% {artifactType} of the same set and same
-            level are not as good as this one.
+            {((1 - result.art_relative / (specificSet ? 2 : 1)) * 100).toFixed(3)}% {artifactType}{" "}
+            of the same level are not as good as this one.
           </Text>
           <Text>{result.art_curr.toFixed(1)} is the current score.</Text>
           <Text>{result.art_expect.toFixed(1)} is the expected score at level 20.</Text>

@@ -63,8 +63,8 @@ class WeightedAttrs:
             AttributeEnum.CRIT_DMG: 1,
             AttributeEnum.ATK_PCT: 0.8,
             AttributeEnum.ATK_FLAT: 0.3,
-            AttributeEnum.ER: 0.6,
-            AttributeEnum.EM: 0.7,
+            AttributeEnum.ER: 0.3,
+            AttributeEnum.EM: 0.3,
         })
         return weights
 
@@ -99,6 +99,22 @@ class WeightedAttrs:
         })
         return weights
 
+
+    @classmethod
+    def hu_tao_plan(cls):
+        weights = WeightedAttrs()
+        weights.set({
+            AttributeEnum.CRIT_RATE:1,
+            AttributeEnum.CRIT_DMG: 1,
+            AttributeEnum.HP_PCT: 0.8,
+            AttributeEnum.HP_FLAT: 0.2,
+            AttributeEnum.ATK_PCT: 0.5,
+            AttributeEnum.ATK_FLAT: 0.15,
+            AttributeEnum.EM: 0.5,
+            AttributeEnum.ER: 0.2,
+        })
+        return weights
+
+
 if __name__ == '__main__':
     print("A")
-

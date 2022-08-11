@@ -53,7 +53,8 @@ def get_artifact_mainattrs():
 def get_artifact_subattrs():
     artifact_mainattr: str = request.json["mainattr"]
     artifact_level: int = request.json["level"]
-    max_scale = (artifact_level // 4 + 1) * 10
+    # max_scale = (artifact_level // 4 + 1) * 10
+    max_scale = 10
     min_scale = 7
     artifact_subattrs: dict[AttributeEnum, float] = ArtifactEnum.FLOWER.subattr_weights_readonly()
     retval = {}
