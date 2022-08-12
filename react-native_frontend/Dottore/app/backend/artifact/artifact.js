@@ -111,7 +111,6 @@ export class Artifact {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
-    console.log("main:", this.#artifact_type);
     const p_main_attr = wd_p_key(
       ArtifactEnum[this.#artifact_type].mainattr_weights_readonly,
       this.#mainattr
@@ -126,10 +125,8 @@ export class Artifact {
         weighted_subattrs
       );
     } else {
-      console.log("CALLED");
       const result = leveled_subattrs_distribution(this.#mainattr, this.#level, weighted_subattrs);
       p_subattrs = result.p_score_greater(this.expected_rating({ weighted_subattrs }), true);
-      console.log("ps:", p_main_attr, p_subattrs);
     }
     return p_main_attr * p_subattrs;
   }

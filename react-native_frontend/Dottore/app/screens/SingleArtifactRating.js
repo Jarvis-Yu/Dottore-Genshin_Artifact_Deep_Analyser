@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, ScrollView, Switch, Text, TouchableHighlight, View } from "react-native";
+import {
+  Button,
+  Dimensions,
+  ScrollView,
+  Switch,
+  Text,
+  TouchableHighlight,
+  View,
+} from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Slider } from "@miblanchard/react-native-slider";
 import { postBackendJson } from "../backend/Backend";
-import { LIST_SUBATTR_RATIO } from "../backend/consts/attribute_consts";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -181,7 +188,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
         {Object.keys(data).length == 0 && Object.keys(value).length !== 0 && setValue({})}
         {Object.keys(data).length > 0 && (
           <Text style={{ fontSize: 16 }}>
-            {title} [{Object.keys(value)}]
+            {title}
+            {/* [{Object.keys(value)}] */}
           </Text>
         )}
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
@@ -204,6 +212,18 @@ export function SingleArtifactRatingScreen({ navigation }) {
       setValue(tmpVal);
       set(tmpVal);
     };
+    Object.keys(value).forEach((key) => {
+      if (!data[key]) {
+        const tmpVal = {};
+        Object.keys(value).forEach((key) => {
+          if (data[key]) {
+            tmpVal[key] = value[key];
+          }
+        });
+        setValue(tmpVal);
+        set(tmpVal);
+      }
+    });
     const renderItem = ({ item }) => {
       const min_val = item.min_val;
       const max_val = item.max_val * (1 + Math.floor(artifactLevel / 4));
@@ -297,7 +317,10 @@ export function SingleArtifactRatingScreen({ navigation }) {
     }
   }, [artifactMainAttr]);
 
-  console.log(typeof LIST_SUBATTR_RATIO)
+  // ==========
+  // Experiment()
+  // ==========
+
   return (
     <ScrollView>
       {/* <Text>
@@ -365,7 +388,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
             });
             if (resp.ok) {
               setResult(resp.data);
-              console.log(resp.data);
             }
           };
           f(post);
@@ -389,6 +411,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           <Text>{result.art_extreme.toFixed(1)} is the best score it can get at level 20.</Text>
         </View>
       )}
+      <View style={{ height: Dimensions.get("window").height * 0.5 }}></View>
     </ScrollView>
   );
 }

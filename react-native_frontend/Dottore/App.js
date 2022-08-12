@@ -37,7 +37,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    getSimpleJson();
+    // getSimpleJson();
   }, []);
 
   return (
