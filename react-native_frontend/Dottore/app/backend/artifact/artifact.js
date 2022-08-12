@@ -1,3 +1,5 @@
+import { ArtifactEnum } from "../consts/artifact_consts";
+import { wd_p_key } from "../helpers/random_weighted_dict_selector";
 import { ArtifactAttrs } from "./artifact_attrs";
 import {
   artifact_current_rating,
@@ -5,6 +7,10 @@ import {
   best_possible_rating,
   default_rating_to_crit_based_rating,
 } from "./rating";
+import {
+  leveled_subattrs_distribution,
+  relative_rarity_compare_subattrs,
+} from "./subattr_distribution";
 import { WeightedAttrs, WeightedAttrsPresets } from "./weighted_attrs";
 
 export class Artifact {
@@ -105,7 +111,27 @@ export class Artifact {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
-    return 0;
+    console.log("main:", this.#artifact_type);
+    const p_main_attr = wd_p_key(
+      ArtifactEnum[this.#artifact_type].mainattr_weights_readonly,
+      this.#mainattr
+    );
+    let p_subattrs = 0;
+    if (this.#level < 4) {
+      p_subattrs = relative_rarity_compare_subattrs(
+        this.#artifact_type,
+        this.#mainattr,
+        this.#level,
+        this.#subattrs,
+        weighted_subattrs
+      );
+    } else {
+      console.log("CALLED");
+      const result = leveled_subattrs_distribution(this.#mainattr, this.#level, weighted_subattrs);
+      p_subattrs = result.p_score_greater(this.expected_rating({ weighted_subattrs }), true);
+      console.log("ps:", p_main_attr, p_subattrs);
+    }
+    return p_main_attr * p_subattrs;
   }
 
   /**

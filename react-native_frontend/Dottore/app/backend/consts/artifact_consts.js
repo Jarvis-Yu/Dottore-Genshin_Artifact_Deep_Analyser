@@ -1,3 +1,4 @@
+import { generateCombinations } from "../helpers/comb_perm";
 import { AttributeEnum } from "./attribute_consts";
 
 export const MAX_NUM_ATTRS = 4;
@@ -58,6 +59,9 @@ export class ArtifactConsts {
     return ArtifactConsts.#SUBATTR_WEIGHTS;
   }
 }
+
+export const ALL_3_ATTR_COMB = generateCombinations(Object.keys(new ArtifactConsts().subattr_weights_readonly), 3)
+export const ALL_4_ATTR_COMB = generateCombinations(Object.keys(new ArtifactConsts().subattr_weights_readonly), 4)
 
 export const ArtifactEnum = {
   FLOWER: new ArtifactConsts("FLOWER", "Flower", "Flower of Life", {

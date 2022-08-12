@@ -1,6 +1,7 @@
 import { ArtifactEnum, MAX_NUM_ATTRS } from "../consts/artifact_consts";
 import { AttributeEnum, AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
-import { copy_object } from "../helpers/object_helper";
+import { permute } from "../helpers/comb_perm";
+import { copy_object, set_if_exist } from "../helpers/object_helper";
 import { wd_p_key } from "../helpers/random_weighted_dict_selector";
 import { ArtifactAttrs } from "./artifact_attrs";
 import { WeightedAttrs } from "./weighted_attrs";
@@ -23,63 +24,6 @@ function p_permutation(weights, permutation) {
     weights[key] = tmp_save[key];
   });
   return p;
-}
-
-/**
- * Credit: https://stackoverflow.com/a/20871714
- * @param {Array<A>} inputArr
- * @returns {Array<Array<A>>}
- */
-function permutator(inputArr) {
-  var results = [];
-
-  function permute(arr, memo) {
-    var cur,
-      memo = memo || [];
-
-    for (var i = 0; i < arr.length; i++) {
-      cur = arr.splice(i, 1);
-      if (arr.length === 0) {
-        results.push(memo.concat(cur));
-      }
-      permute(arr.slice(), memo.concat(cur));
-      arr.splice(i, 0, cur[0]);
-    }
-
-    return results;
-  }
-
-  return permute(inputArr);
-}
-
-/**
- * Credit: https://stackoverflow.com/a/37580979
- * @param {Array<A>} permutation
- * @returns {Array<Array<A>>}
- */
-function permute(permutation) {
-  var length = permutation.length,
-    result = [permutation.slice()],
-    c = new Array(length).fill(0),
-    i = 1,
-    k,
-    p;
-
-  while (i < length) {
-    if (c[i] < i) {
-      k = i % 2 && c[i];
-      p = permutation[i];
-      permutation[i] = permutation[k];
-      permutation[k] = p;
-      ++c[i];
-      i = 1;
-      result.push(permutation.slice());
-    } else {
-      c[i] = 0;
-      ++i;
-    }
-  }
-  return result;
 }
 
 /**
@@ -147,9 +91,9 @@ export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs,
   });
   if (attrs.num_of_attrs === 3) {
     const backup_attrs = copy_object(true_artifact_type.subattr_weights_readonly);
-    backup_attrs[mainattr] = 0;
+    set_if_exist(backup_attrs, mainattr, 0)
     attrs.attrs.forEach((attr) => {
-      backup_attrs[attr] = 0;
+      set_if_exist(backup_attrs, attr, 0)
     });
     weights.attrs.forEach((attr) => {
       if (backup_attrs[attr] && backup_attrs[attr] > 0) {

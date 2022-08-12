@@ -57,14 +57,14 @@ const localRoutes = {
     const artifact_level = args.level;
     const artifact_mainattr = AttributeEnum_find_with_short_name(args.mainattr).key;
     const artifact_subattrs = new ArtifactAttrs();
-    const existing_subattrs = args.subattrs
+    const existing_subattrs = args.subattrs;
     Object.keys(existing_subattrs).forEach((attr) => {
       const true_key = AttributeEnum_find_with_short_name(attr);
       const key = true_key.key;
       const value = existing_subattrs[attr] / true_key.subattr_max_val;
       artifact_subattrs.add(key, value);
     });
-    art = Artifact.rating_only_plan(
+    const art = Artifact.rating_only_plan(
       artifact_level,
       artifact_kind,
       artifact_mainattr,
@@ -74,8 +74,8 @@ const localRoutes = {
     art_expect = art.expected_rating({ crit_based: true });
     art_curr = art.current_rating({ crit_based: true });
     art_extreme = art.extreme_rating({ crit_based: true });
-    art_relative = 1;
-    art_runs = rarity_in_domain_runs(art_relative * p_get_set * p_get_type);
+    art_relative = art.relative_p({});
+    art_runs = rarity_in_domain_runs(art_relative * p_get_set() * p_get_type());
     return {
       art_expect,
       art_extreme,

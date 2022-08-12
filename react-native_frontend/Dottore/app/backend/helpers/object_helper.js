@@ -20,3 +20,16 @@ export function copy_object(object) {
 export function get_or(object, key, alternative) {
   return (object[key] ? object[key] : alternative)
 }
+
+/**
+ * @param {Object<string, A>} object 
+ * @param {string} key 
+ * @param {A} value 
+ * @returns 
+ */
+export function set_if_exist(object, key, value) {
+  if (object[key]) {
+    object[key] = value
+  }
+  return object
+}
