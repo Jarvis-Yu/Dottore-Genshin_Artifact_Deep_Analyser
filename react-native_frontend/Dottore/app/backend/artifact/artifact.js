@@ -39,7 +39,7 @@ export class Artifact {
    * @param {boolean} crit_based
    * @returns {number}
    */
-  current_rating(weighted_subattrs = undefined, crit_based = false) {
+  current_rating({ weighted_subattrs = undefined, crit_based = false }) {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
@@ -56,7 +56,7 @@ export class Artifact {
    * @param {boolean} crit_based
    * @returns {number}
    */
-  expected_rating(weighted_subattrs = undefined, crit_based = false) {
+  expected_rating({ weighted_subattrs = undefined, crit_based = false }) {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
@@ -79,7 +79,7 @@ export class Artifact {
    * @param {boolean} crit_based
    * @returns {number}
    */
-  extreme_rating(weighted_subattrs = undefined, crit_based = false) {
+  extreme_rating({ weighted_subattrs = undefined, crit_based = false }) {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
@@ -101,7 +101,7 @@ export class Artifact {
    * @param {weightedattrs} weighted_subattrs
    * @returns {number}
    */
-  relative_p(weighted_subattrs = undefined) {
+  relative_p({ weighted_subattrs = undefined }) {
     if (!weighted_subattrs) {
       weighted_subattrs = this.#weighted_subattrs;
     }
@@ -109,12 +109,12 @@ export class Artifact {
   }
 
   /**
-   * @param {number} level 
+   * @param {number} level
    * @param {string} artifact_type  ArtifactEnum
    * @param {string} mainattr AttributeEnum
-   * @param {ArtifactAttrs} subattrs 
+   * @param {ArtifactAttrs} subattrs
    * @param {WeightedAttrs} [weights]
-   * @returns 
+   * @returns
    */
   static rating_only_plan(
     level,
@@ -123,6 +123,6 @@ export class Artifact {
     subattrs,
     weights = WeightedAttrsPresets.crit_atk_plan
   ) {
-    return new Artifact(level, 0, undefined, artifact_type, mainattr, subattrs, weights)
+    return new Artifact(level, 0, undefined, artifact_type, mainattr, subattrs, weights);
   }
 }
