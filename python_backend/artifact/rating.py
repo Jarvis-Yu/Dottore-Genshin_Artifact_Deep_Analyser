@@ -200,7 +200,7 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
             artifact_type.subattr_weights_readonly().keys())
         all_possible_attrs.discard(mainattr)
         highest_weighted_attrs: List[AttributeEnum] = []
-        highest_not_in_attr: List[AttributeEnum] = []
+        highest_not_in_attrs: List[AttributeEnum] = []
         for attr in all_possible_attrs:
             weight_attr = weights.get(attr)
             if len(highest_weighted_attrs) == 0:
@@ -210,14 +210,14 @@ def best_possible_rating(artifact_type: ArtifactEnum, mainattr: AttributeEnum, l
             elif weight_attr == weights.get(highest_weighted_attrs[0]):
                 highest_weighted_attrs.append(attr)
             if attr not in attrs.attrs():
-                if len(highest_not_in_attr) == 0:
-                    highest_not_in_attr.append(attr)
-                elif weight_attr > weights.get(highest_not_in_attr[0]):
-                    highest_not_in_attr = [attr]
-                elif weight_attr == weights.get(highest_not_in_attr[0]):
-                    highest_not_in_attr.append(attr)
+                if len(highest_not_in_attrs) == 0:
+                    highest_not_in_attrs.append(attr)
+                elif weight_attr > weights.get(highest_not_in_attrs[0]):
+                    highest_not_in_attrs = [attr]
+                elif weight_attr == weights.get(highest_not_in_attrs[0]):
+                    highest_not_in_attrs.append(attr)
         for attr in attrs.attrs():
             rating += weights.get(attr) * attrs.get_scale(attr)
-        rating += weights.get(highest_not_in_attr[0])
+        rating += weights.get(highest_not_in_attrs[0])
         rating += (chances - 1) * weights.get(highest_weighted_attrs[0])
     return rating

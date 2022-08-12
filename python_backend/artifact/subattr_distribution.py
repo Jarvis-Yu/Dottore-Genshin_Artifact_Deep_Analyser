@@ -18,7 +18,7 @@ def _scale_distribtion():
         curr = {}
         for scale in prev:
             for ratio in LIST_SUBATTR_RATIO:
-                key = scale + ratio
+                key = round(scale + ratio, 1)
                 curr[key] = curr.setdefault(key, 0) + prev[scale] * 1 / len_ratios
         distribution.append(curr)
     return distribution

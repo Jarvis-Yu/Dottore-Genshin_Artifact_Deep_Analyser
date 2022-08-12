@@ -75,7 +75,7 @@ class ArtifactEnum(Enum):
             AttributeEnum.HYDRO_DB: 5,
             AttributeEnum.ANEMO_DB: 5,
             AttributeEnum.ELECTRO_DB: 5,
-            AttributeEnum.DENDRO_DB: 5,
+            # AttributeEnum.DENDRO_DB: 5,
             AttributeEnum.CRYO_DB: 5,
             AttributeEnum.GEO_DB: 5,
             AttributeEnum.PHYSICAL_DB: 5,
