@@ -28,7 +28,7 @@ export class WeightedAttrs {
   }
 }
 
-export const PresetWeightedAttrs = {
+export const WeightedAttrsPresets = {
   crit_atk_er_em_plan: new WeightedAttrs().set({
     CRIT_RATE: 1,
     CRIT_DMG: 1,
