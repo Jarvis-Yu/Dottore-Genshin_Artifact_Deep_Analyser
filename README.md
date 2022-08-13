@@ -2,7 +2,7 @@
 
 ## Features
 
-![Single_Artifact_Rating_1](readme_media/ScreenShot_SingleArtifactRating_1.png)
+<img src="readme_media/ScreenShot_SingleArtifactRating_1.png" alt="Single_Artifact_Rating_1" width="360"/>
 
 ### Current Features
 
@@ -16,7 +16,7 @@
 - More analysis:
   - Probability for an artifact to reach a certain score or rarity
 - Support more languages
-- Take photo and AI scan the artifact attributes (may take a long time)
+- Take photo and AI scan the artifact attributes (may take a long time to develope)
 - ...
 
 ## Install and FAQ
@@ -25,8 +25,19 @@
 
 Sorry, though the apk is available, but allow me to polish its aesthetics for another few days.
 
+### Supported Platforms?
+
+Both `android` and `ios` are supported, but currently I don't want to pay the money to list the app on App Store.
+So for the foreseeable future, only `android apk` will be released.
+
+### Supported Languages?
+
+- English
+- 简体中文 (developing)
+- 日本語 (if anyone volunteers to translate for me)
+
 ## Contact
 
-Please contact me if you have any other questions or interested in joining.
+Please contact me if you have any questions, suggestions or interested in joining in.
 
 - Email: JarvisYu_Pro@outlook.com
