@@ -1,37 +1,32 @@
-# Dottore (Genshin Artifact Enhance Helper)
-
-The project is still in its early stages.
-So it does not have a friendly user interface yet.
+# Dottore (Genshin Artifact Deep Analyser)
 
 ## Features
 
-### Sub-stat rarity in terms of obtaining
+![Single_Artifact_Rating_1](readme_media/ScreenShot_SingleArtifactRating_1.png)
 
-The function `src.gsop.artifact.rarity.p_y_useful_given_x()` calculates the probability of obtaining
-an artifact with `y` or more useful attributes given there are `x` initial attributes.
+### Current Features
 
-### Sub-stat rating based on its potential
+- Use only sliders and buttons to input the artifact information, free from mobile keyboard
+- Deep analysis of an artifact on submission:
+  - The rarity of an artifact considering the rarity of its main-attribute and sub-attributes
+  - Expected&Extreme score of the artifact at max-level based on its current sub-attributes
 
-The function `src.gsop.artifact.rating.artifact_rating_expectation()` calculates the average score
-the given artifact will get when it is level up to 20. Caller can custom weights for the attributes.
+### Future Features
 
-### Sub-stat rating based on its potential and rarity
+- More analysis:
+  - Probability for an artifact to reach a certain score or rarity
+- Support more languages
+- Take photo and AI scan the artifact attributes (may take a long time)
+- ...
 
-The function `src.gsop.artifact.rating.relative_rating_compare_subattrs()` calculates the
-possibility of getting an artifact which has its current potential score.
+## Install and FAQ
 
-### More
+### Install
 
-Developing...
+Sorry, though the apk is available, but allow me to polish its aesthetics for another few days.
 
-## Current Plan
+## Contact
 
-- Develop a user-friendly interface (mobile app / web).
-- Improve the algorithm which do the math.
-- More functions added to evaluate a standalone artifact. (potential, and fair score based on rarity)
-
-## Interested in Joining or Have a Question
-
-Please contact me for more information.
+Please contact me if you have any other questions or interested in joining.
 
 - Email: JarvisYu_Pro@outlook.com
