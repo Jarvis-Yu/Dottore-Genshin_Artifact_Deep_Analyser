@@ -7,10 +7,15 @@ import {
   Text,
   TouchableHighlight,
   View,
+  StyleSheet,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Slider } from "@miblanchard/react-native-slider";
 import { postBackendJson } from "../backend/Backend";
+import key_2_lan from "../language/key_2_lan";
+import languages from "../language/languages";
+import { lightTheme, ThemeContext } from "../styles/Styles";
+import { SelectOne } from "../components/Selection";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -25,13 +30,22 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactMainAttrs, setArtifactMainAttrs] = useState([]);
   const [artifactSubAttrs, setArtifactSubAttrs] = useState([]);
   const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState([]);
-  const selected = "#000088";
-  const notSelected = "#8888FF";
+
+  const theme = React.useContext(ThemeContext);
+  const [selected, setSelected] = useState("#000088");
+  const [notSelected, setNotSelected] = useState("#8888FF");
+  useEffect(() => {
+    setSelected(theme.colors.selected);
+    setNotSelected(theme.colors.notSelected);
+  }, [theme]);
+  const language = languages.EN;
 
   const LevelComponent = () => {
     return (
       <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
-        <Text style={{ fontSize: 16 }}>Artifact level is [{artifactLevel}]</Text>
+        <Text style={{ fontSize: 16, color: theme.colors.text }}>
+          Artifact level is [{artifactLevel}]
+        </Text>
         <Slider
           // animateTransitions
           minimumValue={0}
@@ -41,81 +55,86 @@ export function SingleArtifactRatingScreen({ navigation }) {
           onValueChange={(val) => {
             setArtifactLevel(val[0]);
           }}
-          thumbStyle={{ backgroundColor: selected }}
-          trackStyle={{ backgroundColor: notSelected }}
-          minimumTrackTintColor={notSelected}
+          thumbStyle={{ backgroundColor: theme.colors.selected }}
+          trackStyle={{ backgroundColor: theme.colors.notSelected }}
+          minimumTrackTintColor={theme.colors.notSelected}
         />
       </View>
     );
   };
 
-  function SelectOne({ data, set = (f) => f, title = "Sample Title:" }) {
-    const [lastOne, setLastOne] = useState("");
-    const [value, setValue] = useState("");
-    const [propDict, setPropDict] = useState({});
-    const origianlData = ({ last = "" }) => {
-      const tmpDict = propDict;
-      if (tmpDict[last]) {
-        tmpDict[last].color = notSelected;
-      }
-      return tmpDict;
-    };
-    // const [localStyles, setLocalStyles] = useState(origianlData({ lastOne }));
-    const updateStates = (item) => {
-      const k = origianlData({ last: lastOne });
-      setLastOne(item);
-      setValue(item);
-      if (item !== "") {
-        set(propDict[item].value);
-        k[item]["color"] = selected;
-      } else {
-        set("");
-      }
-      setPropDict(k);
-    };
-    const renderItem = ({ item }) => {
-      tmpDict = propDict;
-      if (!tmpDict[item.title]) {
-        tmpDict[item.title] = {
-          title: item.title,
-          value: item.value || item.title,
-          color: notSelected,
-        };
-        setPropDict(tmpDict);
-      }
-      return (
-        <TouchableHighlight
-          style={{ marginRight: 10 }}
-          underlayColor={selected}
-          onPress={() => {
-            updateStates(propDict[item.title].title);
-          }}
-          key={item.title}
-        >
-          <View style={{ backgroundColor: propDict[item.title].color, padding: 5 }}>
-            <Text style={{ color: "#FFFFFF" }}>{propDict[item.title].title}</Text>
-          </View>
-        </TouchableHighlight>
-      );
-    };
-    if (lastOne !== "" && !data.map((item) => item.title === lastOne).reduce((a, b) => a || b)) {
-      updateStates("");
-    }
-    return (
-      <View style={{ marginHorizontal: 10, marginVertical: 5 }}>
-        {data.length > 0 && (
-          <Text style={{ fontSize: 16 }}>
-            {title} [{value}]
-          </Text>
-        )}
-        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-          {data && data.map((item) => renderItem({ item }))}
-        </ScrollView>
-      </View>
-    );
-  }
+  // /**
+  //  * @param {Object<>} data
+  //  * @param {string} data.key unique identifier
+  //  * @param {string} [data.title] use data.key if not found
+  //  * @param {string} [data.value] use data.key if not found
+  //  * @param {string} value pair with onValueChange
+  //  * @param {function} onValueChange pair with value
+  //  * @param {string} title
+  //  * @param {boolean} wrap true if options should be wrapped into multiple lines
+  //  */
+  // function SelectOne({
+  //   data = {},
+  //   value = undefined,
+  //   onValueChange = (f) => f,
+  //   title = "",
+  //   wrap = false,
+  //   theme = lightTheme,
+  // }) {
+  //   const updateStates = (key) => {
+  //     if (data[key]) {
+  //       onValueChange(data[key].value || data[key].key);
+  //     } else {
+  //       onValueChange("");
+  //     }
+  //   };
+  //   const renderItem = (item) => {
+  //     return (
+  //       <TouchableHighlight
+  //         style={styles.option}
+  //         underlayColor={theme.colors.selected}
+  //         onPress={() => {
+  //           updateStates(item.key);
+  //         }}
+  //         key={item.key}
+  //       >
+  //         <View
+  //           style={{
+  //             backgroundColor:
+  //               value === item.key ? theme.colors.selected : theme.colors.notSelected,
+  //             padding: 5,
+  //           }}
+  //         >
+  //           <Text style={{ color: theme.colors.textContrast }}>{item.title || item.key}</Text>
+  //         </View>
+  //       </TouchableHighlight>
+  //     );
+  //   };
+  //   if (value !== "" && !data[value]) {
+  //     onValueChange("");
+  //   }
+  //   return (
+  //     <View style={styles.component}>
+  //       {Object.keys(data).length > 0 && title !== "" && (
+  //         <Text style={[theme.text.content, { color: theme.colors.text }]}>
+  //           {title} [{value}] {wrap ? "" : "(options scrollable)"}
+  //         </Text>
+  //       )}
+  //       {!wrap && (
+  //         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+  //           {data && Object.keys(data).map((key) => renderItem(data[key]))}
+  //         </ScrollView>
+  //       )}
+  //       {wrap && (
+  //         <View style={{ flexDirection: "row", flexWrap: true }}>
+  //           {data && Object.keys(data).map((key) => renderItem(data[key]))}
+  //         </View>
+  //       )}
+  //     </View>
+  //   );
+  // }
 
-  function SelectMultiple({ data, set = (f) => f, title = "Sample Title:", maxNum = 4 }) {
+  function SelectMultiple({ data, onValueChange = (f) => f, title = "Sample Title:", maxNum = 4 }) {
     const [value, setValue] = useState({});
     const [propDict, setPropDict] = useState({});
     const updateStates = (key) => {
@@ -150,7 +169,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           tmpDict[key].color = selected;
         });
         setValue(newSelected);
-        set(newSelected);
+        onValueChange(newSelected);
         setPropDict(tmpDict);
       }
     };
@@ -159,6 +178,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       if (!tmpDict[item.key] || (tmpDict[item.key].color === selected && !value[item.key])) {
         tmpDict[item.key] = {
           key: item.key,
+          title: item.title || item.key,
           color: notSelected,
         };
         setPropDict(tmpDict);
@@ -173,7 +193,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           key={item.key}
         >
           <View style={{ backgroundColor: propDict[item.key].color, padding: 5 }}>
-            <Text style={{ color: "#FFFFFF" }}>{item.key}</Text>
+            <Text style={{ color: "#FFFFFF" }}>{item.title || item.key}</Text>
           </View>
         </TouchableHighlight>
       );
@@ -199,7 +219,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     );
   }
 
-  function MultipleSlider({ data, set = (f) => f, title = "Sample Title:" }) {
+  function MultipleSlider({ data, onValueChange = (f) => f, title = "Sample Title:" }) {
     const [value, setValue] = useState({});
     const updateValue = (the_key, val) => {
       const tmpVal = {};
@@ -210,7 +230,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       });
       tmpVal[the_key] = val;
       setValue(tmpVal);
-      set(tmpVal);
+      onValueChange(tmpVal);
     };
     Object.keys(value).forEach((key) => {
       if (!data[key]) {
@@ -221,7 +241,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           }
         });
         setValue(tmpVal);
-        set(tmpVal);
+        onValueChange(tmpVal);
       }
     });
     const renderItem = ({ item }) => {
@@ -242,7 +262,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
               style={{ flex: 1 }}
             >
               <View style={{ padding: 5, alignContent: "center" }}>
-                <Text>{item.key}</Text>
+                <Text>{item.title || item.key}</Text>
                 <Text>
                   {value[item.key] &&
                     (min_val < 1 ? (value[item.key] * 100).toFixed(1) : value[item.key].toFixed(0))}
@@ -308,6 +328,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
+          Object.keys(resp.data).forEach((key) => {
+            resp.data[key].title = key_2_lan(key, language.key);
+          });
           setArtifactSubAttrs(resp.data);
         }
       };
@@ -322,43 +345,49 @@ export function SingleArtifactRatingScreen({ navigation }) {
   // ==========
 
   return (
-    <ScrollView>
-      {/* <Text>
+    <ScrollView backgroundColor={theme.colors.background}>
+      {/* <Text style={{ color: theme.colors.text }}>
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
       </Text>
       {Object.keys(artifactSubAttr).map((key) => (
-        <Text key={key}>
+        <Text key={key} style={{ color: theme.colors.text }}>
           [{key}, {artifactSubAttr[key]}]
         </Text>
       ))} */}
-      {LevelComponent()}
-      {SelectOne({
-        title: "Artifact kind is",
-        data: [
-          { title: "Flower" },
-          { title: "Plume" },
-          { title: "Sands" },
-          { title: "Goblet" },
-          { title: "Circlet" },
-        ],
-        set: setArtifactType,
-      })}
-      {SelectOne({
-        title: "Main attribute is",
-        data: artifactMainAttrs,
-        set: setArtifactMainAttr,
-      })}
+      <LevelComponent />
+      <SelectOne
+        title="Artifact kind is"
+        data={{
+          Flower: { key: "Flower", title: "Flower" },
+          Plume: { key: "Plume", title: "Plume" },
+          Sands: { key: "Sands", title: "Sands" },
+          Goblet: { key: "Goblet", title: "Goblet" },
+          Circlet: { key: "Circlet", title: "Circlet" },
+        }}
+        value={artifactType}
+        onValueChange={setArtifactType}
+        theme={theme}
+        wrap={true}
+      />
+      <SelectOne
+        title="Main attribute is"
+        data={artifactMainAttrs}
+        value={artifactMainAttr}
+        onValueChange={setArtifactMainAttr}
+        theme={theme}
+        wrap={true}
+      />
       {SelectMultiple({
         title: "Sub attribues are",
         data: artifactSubAttrs,
-        set: setArtifactSelectedSubAttrs,
+        onValueChange: setArtifactSelectedSubAttrs,
         maxNum: 4,
       })}
       {MultipleSlider({
         title: "TMP",
         data: artifactSelectedSubAttrs,
-        set: setArtifactSubAttr,
+        onValueChange: setArtifactSubAttr,
       })}
       {Object.keys(artifactSelectedSubAttrs).length > 0 && (
         <View style={{ flexDirection: "row", marginHorizontal: 10, marginVertical: 0 }}>
@@ -391,8 +420,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
             }
           };
           f(post);
-          // console.log(post)
-          // alert("Submitted");
         }}
       />
       {Object.keys(result).length > 0 && (
@@ -415,3 +442,14 @@ export function SingleArtifactRatingScreen({ navigation }) {
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  component: {
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+  option: {
+    marginRight: 10,
+    marginBottom: 5,
+  },
+});

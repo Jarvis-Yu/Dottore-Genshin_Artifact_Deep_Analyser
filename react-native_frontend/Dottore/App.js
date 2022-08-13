@@ -13,11 +13,13 @@ const Stack = createNativeStackNavigator();
 /*
 follow: https://docs.expo.dev/build/setup/
 to build app
+also: https://docs.expo.dev/archive/classic-updates/building-standalone-apps/?redirected
 */
 
 export default function App() {
   console.log("[i] App: rendered");
   const [darkMode, setDarkMode] = useState(false);
+  console.log(darkMode)
   const [data, setData] = useState({ val1: -1, val2: -1 });
 
   async function getSimpleJson() {
@@ -42,6 +44,7 @@ export default function App() {
 
   return (
     <ThemeContext.Provider value={darkMode ? darkTheme : lightTheme}>
+      <Switch value={darkMode} onValueChange={() => setDarkMode((previousState) => !previousState)} />
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Single Artifact Rating">
           <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />

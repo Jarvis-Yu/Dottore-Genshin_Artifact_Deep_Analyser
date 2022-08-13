@@ -46,5 +46,5 @@ export const WeightedAttrsPresets = {
     CRIT_DMG: 1,
     ATK_PCT: 0.8,
     ATK_FLAT: 0.3,
-  })
+  }),
 };

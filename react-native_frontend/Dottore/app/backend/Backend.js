@@ -10,7 +10,7 @@ const localHost = "http://localhost:41372";
 
 const localRoutes = {
   "/artifact/type-to-mainattrs": ({ args }) => {
-    const retval = [];
+    const retval = {};
     // if (!args.type) {
     //   return retval;
     // }
@@ -18,9 +18,10 @@ const localRoutes = {
     const artifact = ArtifactEnum_find_with_short_name(artifact_type);
     if (artifact) {
       Object.keys(artifact.mainattr_weights_readonly).forEach((mainattr) => {
-        retval.push({
-          title: AttributeEnum[mainattr].short_name,
-        });
+        const short_name = AttributeEnum[mainattr].short_name
+        retval[short_name] = {
+          key: short_name,
+        };
       });
     }
     return retval;
