@@ -1,3 +1,4 @@
+import { Slider } from "@miblanchard/react-native-slider";
 import { TouchableHighlight, View, Text, ScrollView, StyleSheet } from "react-native";
 import { lightTheme } from "../styles/Styles";
 
@@ -67,6 +68,38 @@ export function SelectOne({
           {data && Object.keys(data).map((key) => renderItem(data[key]))}
         </View>
       )}
+    </View>
+  );
+}
+
+export function TitledSlider({
+  title = "",
+  value = undefined,
+  onValueChange = (f) => f,
+  minVal = 0,
+  maxVal = 1,
+  step = 0.1,
+  theme = lightTheme,
+}) {
+  return (
+    <View style={styles.component}>
+      {title !== "" && (
+        <Text style={[theme.text.content, { color: theme.colors.text }]}>
+          {title} [{value}]
+        </Text>
+      )}
+      <Slider
+        minimumValue={minVal}
+        maximumValue={maxVal}
+        step={step}
+        value={value}
+        onValueChange={(val) => {
+          onValueChange(val[0]);
+        }}
+        thumbStyle={{ backgroundColor: theme.colors.selected }}
+        trackStyle={{ backgroundColor: theme.colors.notSelected }}
+        minimumTrackTintColor={theme.colors.notSelected}
+      />
     </View>
   );
 }
