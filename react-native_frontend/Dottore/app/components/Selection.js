@@ -1,4 +1,5 @@
 import { Slider } from "@miblanchard/react-native-slider";
+import { useEffect } from "react";
 import { TouchableHighlight, View, Text, ScrollView, StyleSheet } from "react-native";
 import { lightTheme } from "../styles/Styles";
 
@@ -48,13 +49,16 @@ export function SelectOne({
       </TouchableHighlight>
     );
   };
-  if (value !== "" && !data[value]) {
-    onValueChange("");
-  }
+  useEffect(() => {
+    if (value !== "" && !data[value]) {
+      onValueChange("");
+    }
+  });
   return (
     <View style={styles.component}>
       {Object.keys(data).length > 0 && title !== "" && (
         <Text style={[theme.text.content, { color: theme.colors.text }]}>
+          {/* {title} [{(data[value] && data[value].title) || ""}] {wrap ? "" : "(options scrollable)"} */}
           {title} [{value}] {wrap ? "" : "(options scrollable)"}
         </Text>
       )}

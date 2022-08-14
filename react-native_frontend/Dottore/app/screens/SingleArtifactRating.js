@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Slider } from "@miblanchard/react-native-slider";
-import { postBackendJson } from "../backend/Backend";
+import { getBackendJson, postBackendJson } from "../backend/Backend";
 import key_2_lan from "../language/key_2_lan";
 import languages from "../language/languages";
 import { lightTheme, ThemeContext } from "../styles/Styles";
 import { SelectOne, TitledSlider } from "../components/Selection";
+import prompt_2_lan from "../language/prompt_2_lan";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -27,9 +28,10 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [specificSet, setSpecificSet] = useState(true);
   const [result, setResult] = useState({});
 
-  const [artifactMainAttrs, setArtifactMainAttrs] = useState([]);
-  const [artifactSubAttrs, setArtifactSubAttrs] = useState([]);
-  const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState([]);
+  const [artifactTypes, setArtifactTypes] = useState({});
+  const [artifactMainAttrs, setArtifactMainAttrs] = useState({});
+  const [artifactSubAttrs, setArtifactSubAttrs] = useState({});
+  const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState({});
 
   const theme = React.useContext(ThemeContext);
   const [selected, setSelected] = useState("#000088");
@@ -38,7 +40,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     setSelected(theme.colors.selected);
     setNotSelected(theme.colors.notSelected);
   }, [theme]);
-  const language = languages.EN;
+  const language = languages.CH;
 
   function SelectMultiple({ data, onValueChange = (f) => f, title = "Sample Title:", maxNum = 4 }) {
     const [value, setValue] = useState({});
@@ -207,6 +209,21 @@ export function SingleArtifactRatingScreen({ navigation }) {
   }
 
   useEffect(() => {
+    const f = async () => {
+      const resp = await getBackendJson({
+        route: "/artifact/types",
+      });
+      if (resp.ok) {
+        Object.keys(resp.data).forEach((key) => {
+          resp.data[key].title = key_2_lan(key, language.key);
+        });
+        setArtifactTypes(resp.data);
+      }
+    };
+    f();
+  }, []);
+
+  useEffect(() => {
     if (artifactType !== "") {
       const f = async () => {
         const resp = await postBackendJson({
@@ -216,6 +233,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
+          Object.keys(resp.data).forEach((key) => {
+            resp.data[key].title = key_2_lan(key, language.key);
+          });
           setArtifactMainAttrs(resp.data);
         }
       };
@@ -262,7 +282,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         </Text>
       ))} */}
       {TitledSlider({
-        title: "Artifact level is",
+        title: prompt_2_lan("artifact_level_is", language.key),
         value: artifactLevel,
         onValueChange: setArtifactLevel,
         minVal: 0,
@@ -271,21 +291,15 @@ export function SingleArtifactRatingScreen({ navigation }) {
         theme,
       })}
       <SelectOne
-        title="Artifact kind is"
-        data={{
-          Flower: { key: "Flower", title: "Flower" },
-          Plume: { key: "Plume", title: "Plume" },
-          Sands: { key: "Sands", title: "Sands" },
-          Goblet: { key: "Goblet", title: "Goblet" },
-          Circlet: { key: "Circlet", title: "Circlet" },
-        }}
+        title={prompt_2_lan("artifact_kind_is", language.key)}
+        data={artifactTypes}
         value={artifactType}
         onValueChange={setArtifactType}
         theme={theme}
         wrap={true}
       />
       <SelectOne
-        title="Main attribute is"
+        title={prompt_2_lan("main_attr_is", language.key)}
         data={artifactMainAttrs}
         value={artifactMainAttr}
         onValueChange={setArtifactMainAttr}

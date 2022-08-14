@@ -9,6 +9,15 @@ const local = true;
 const localHost = "http://localhost:41372";
 
 const localRoutes = {
+  "/artifact/types": () => {
+    const retval = {};
+    Object.keys(ArtifactEnum).forEach((key) => {
+      retval[ArtifactEnum[key].short_name] = {
+        key: ArtifactEnum[key].short_name,
+      }
+    })
+    return retval;
+  },
   "/artifact/type-to-mainattrs": ({ args }) => {
     const retval = {};
     // if (!args.type) {
