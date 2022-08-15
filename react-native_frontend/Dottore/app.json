@@ -7,8 +7,15 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "splash": {
+      "image": "./app/assets/icon.png",
+      "backgroundColor": "#648189"
+    },
     "android": {
       "package": "com.jarvisyu.genshindottore"
+    },
+    "ios": {
+      "bundleIdentifier": "com.jarvisyu.genshindottore"
     }
   }
 }
