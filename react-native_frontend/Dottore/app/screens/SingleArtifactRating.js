@@ -68,7 +68,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
       });
     });
     const renderItem = (item) => {
-      // console.log(item)
       const min_val = item.min_val;
       const max_val = item.max_val * (1 + Math.floor(artifactLevel / 4));
       const step = item.step;

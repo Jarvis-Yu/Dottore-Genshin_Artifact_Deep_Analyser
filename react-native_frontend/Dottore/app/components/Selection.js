@@ -127,7 +127,6 @@ export function SelectMultiple({
     }
   };
   const renderItem = (item) => {
-    console.log(">", language, item);
     return (
       <TouchableHighlight
         style={styles.option}
