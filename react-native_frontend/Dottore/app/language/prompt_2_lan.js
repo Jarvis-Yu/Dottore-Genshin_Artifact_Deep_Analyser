@@ -56,7 +56,7 @@ const prompt_lan_pair = {
   },
   compare_same_level: {
     EN: " of the same level are not better than this one.",
-    CH: "都不比此圣遗物好。",
+    CH: "同等级时都不比此圣遗物好。",
   },
   is_curr_score: {
     EN: " is the current score.",

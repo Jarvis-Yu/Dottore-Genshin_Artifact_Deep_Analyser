@@ -323,7 +323,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
             {prompt_2_lan("domain_runs_needed", language)}
             {"\n"}
             {((1 - result.art_relative / (specificSet ? 2 : 1)) * 100).toFixed(3)}%{" "}
-            {artifactTypes[artifactType].title}
+            {artifactTypes[artifactType].title || key_2_lan(artifactType, language)}
             {prompt_2_lan("compare_same_level", language)}
             {"\n"}
             {result.art_curr.toFixed(1)}
