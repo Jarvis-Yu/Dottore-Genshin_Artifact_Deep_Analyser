@@ -1,8 +1,11 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React, { useEffect, useState } from "react";
-import { Switch, Text } from "react-native";
+import { ScrollView, Switch, Text, TouchableHighlight, StyleSheet, View } from "react-native";
 import { getBackendJson, postBackendJson } from "./app/backend/Backend";
+import { SelectOne } from "./app/components/Selection";
+import languages from "./app/language/languages";
+import prompt_2_lan from "./app/language/prompt_2_lan";
 import RootTabs from "./app/screens/RootTabs";
 import SettingScreen from "./app/screens/SettingScreen";
 import { SingleArtifactRatingScreen } from "./app/screens/SingleArtifactRating";
@@ -19,46 +22,93 @@ also: https://docs.expo.dev/archive/classic-updates/building-standalone-apps/?re
 export default function App() {
   console.log("[i] App: rendered");
   const [darkMode, setDarkMode] = useState(false);
-  console.log(darkMode)
-  const [data, setData] = useState({ val1: -1, val2: -1 });
+  const [language, setLanguage] = useState(languages.EN.key);
 
-  async function getSimpleJson() {
-    // const data = await getBackendJson({ route: "/simple_json" });
-    const data = await postBackendJson({
-      route: "/repeat",
-      args: {
-        val1: 5,
-        val2: 4,
-      },
+  const theme = darkMode ? darkTheme : lightTheme;
+  theme.language = languages[language]
+
+  function Setting({ navigation }) {
+    const languageData = {};
+    Object.keys(languages).forEach((key) => {
+      languageData[key] = { key, title: languages[key].title };
     });
-    if (data.ok) {
-      setData(data.data);
-    } else {
-      // setData({ val1: -1, val2: -1 });
-    }
+    return (
+      <ScrollView style={{ backgroundColor: theme.colors.background }}>
+        <View style={[styles.oneSetting, { flexDirection: "row" }]}>
+          <Text style={[theme.text.content, { color: theme.colors.text, flex: 1 }]}>
+            {prompt_2_lan("dark_mode", language)}
+          </Text>
+          <View style={{ flex: 4, flexDirection: "row", justifyContent: "space-between" }}>
+            <Switch
+              trackColor={{ false: theme.colors.notSelected, true: theme.colors.selected }}
+              value={darkMode}
+              onValueChange={() => setDarkMode((previousState) => !previousState)}
+            />
+          </View>
+        </View>
+        <SelectOne
+          title={prompt_2_lan("language", language)}
+          data={languageData}
+          value={language}
+          onValueChange={setLanguage}
+          theme={theme}
+          wrap={true}
+        />
+      </ScrollView>
+    );
   }
 
-  useEffect(() => {
-    // getSimpleJson();
-  }, []);
+  const ToSetting = () => {
+    const navigation = useNavigation();
+    return (
+      <TouchableHighlight
+        underlayColor={theme.colors.bar}
+        onPress={() => navigation.navigate("Setting")}
+      >
+        <Text style={[theme.text.title, { color: theme.colors.textContrast }]}>
+          {prompt_2_lan("setting", theme.language.key)}
+        </Text>
+      </TouchableHighlight>
+    );
+  };
 
   return (
-    <ThemeContext.Provider value={darkMode ? darkTheme : lightTheme}>
-      <Switch value={darkMode} onValueChange={() => setDarkMode((previousState) => !previousState)} />
+    <ThemeContext.Provider value={{ theme, language }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Single Artifact Rating">
+        <Stack.Navigator
+          initialRouteName="SingleArtifactRating"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: theme.colors.bar,
+            },
+            headerTintColor: theme.colors.textContrast,
+            statusBarColor: theme.colors.bar,
+            headerRight: () => ToSetting(),
+          }}
+        >
           <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="Single Artifact Rating" component={SingleArtifactRatingScreen} />
-          {/* <Stack.Screen
+          <Stack.Screen
+            name="SingleArtifactRating"
+            component={SingleArtifactRatingScreen}
+            options={{ title: prompt_2_lan("single_artifact_rating", language) }}
+          />
+          <Stack.Screen
             name="Setting"
-            component={SettingScreen}
-            initialParams={{ themeValue: darkMode, themeSet: setDarkMode }}
-          /> */}
+            component={Setting}
+            options={{
+              title: prompt_2_lan("setting", language),
+              headerRight: () => <></>,
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
-      {/* <Text>
-        {data?.val1}, {data?.val2}
-      </Text> */}
     </ThemeContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  oneSetting: {
+    marginHorizontal: 10,
+    marginVertical: 5,
+  },
+});

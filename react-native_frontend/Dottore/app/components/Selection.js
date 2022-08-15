@@ -1,6 +1,7 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect } from "react";
 import { TouchableHighlight, View, Text, ScrollView, StyleSheet } from "react-native";
+import prompt_2_lan from "../language/prompt_2_lan";
 import { lightTheme } from "../styles/Styles";
 
 /**
@@ -15,11 +16,11 @@ import { lightTheme } from "../styles/Styles";
  */
 export function SelectOne({
   data = {},
-  value = undefined,
+  value = "",
   onValueChange = (f) => f,
   title = "",
-  wrap = false,
   theme = lightTheme,
+  wrap = false,
 }) {
   const updateStates = (key) => {
     if (data[key]) {
@@ -58,8 +59,9 @@ export function SelectOne({
     <View style={styles.component}>
       {Object.keys(data).length > 0 && title !== "" && (
         <Text style={[theme.text.content, { color: theme.colors.text }]}>
-          {/* {title} [{(data[value] && data[value].title) || ""}] {wrap ? "" : "(options scrollable)"} */}
-          {title} [{value}] {wrap ? "" : "(options scrollable)"}
+          {title} [{(data[value] && data[value].title) || ""}]{" "}
+          {wrap ? "" : prompt_2_lan("options_scrollable", theme.language.key)}
+          {/* {title} [{value}] {wrap ? "" : "(options scrollable)"} */}
         </Text>
       )}
       {!wrap && (
@@ -68,7 +70,98 @@ export function SelectOne({
         </ScrollView>
       )}
       {wrap && (
-        <View style={{ flexDirection: "row", flexWrap: true }}>
+      <View style={{ flexDirection: "row", flexWrap: wrap ? "wrap" : "nowrap" }}>
+        {data && Object.keys(data).map((key) => renderItem(data[key]))}
+      </View>
+      )}
+    </View>
+  );
+}
+
+/**
+ * @param {Object<>} data all fields will be passed to `value`
+ * @param {string} data.key unique identifier
+ * @param {string} [data.title] use data.key if not found
+ * @param {string} value pair with onValueChange
+ * @param {function} onValueChange pair with value
+ * @param {string} title
+ * @param {boolean} wrap true if options should be wrapped into multiple lines
+ */
+export function SelectMultiple({
+  data,
+  value = {},
+  onValueChange = (f) => f,
+  title = "",
+  maxNum = 4,
+  wrap = false,
+  theme = lightTheme,
+}) {
+  const updateStates = (key) => {
+    const currentSelected = value;
+    const newSelected = {};
+    let updated = false;
+    if (currentSelected[key]) {
+      // remove key from value
+      Object.keys(currentSelected).forEach((thisKey) => {
+        if (thisKey !== key && data[thisKey]) {
+          newSelected[thisKey] = data[thisKey];
+        }
+      });
+      updated = true;
+    } else if (Object.keys(currentSelected).length < maxNum) {
+      // add key to value
+      Object.keys(currentSelected).forEach((thisKey) => {
+        newSelected[thisKey] = data[thisKey];
+      });
+      newSelected[key] = data[key];
+      updated = true;
+    }
+    if (updated) {
+      onValueChange(newSelected);
+    }
+  };
+  const renderItem = (item) => {
+    return (
+      <TouchableHighlight
+        style={styles.option}
+        underlayColor={theme.colors.selected}
+        onPress={() => {
+          updateStates(item.key);
+        }}
+        key={item.key}
+      >
+        <View
+          style={{
+            backgroundColor: value[item.key] ? theme.colors.selected : theme.colors.notSelected,
+            padding: 5,
+          }}
+        >
+          <Text style={{ color: theme.colors.textContrast }}>{item.title || item.key}</Text>
+        </View>
+      </TouchableHighlight>
+    );
+  };
+  useEffect(() => {
+    Object.keys(value).forEach((key) => {
+      if (!data[key]) {
+        updateStates(key);
+      }
+    });
+  });
+  return (
+    <View style={styles.component}>
+      {Object.keys(data).length > 0 && title !== "" && (
+        <Text style={[theme.text.content, { color: theme.colors.text }]}>
+          {title} {wrap ? "" : prompt_2_lan("options_scrollable", theme.language.key)}
+        </Text>
+      )}
+      {!wrap && (
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+          {data && Object.keys(data).map((key) => renderItem(data[key]))}
+        </ScrollView>
+      )}
+      {wrap && (
+        <View style={{ flexDirection: "row", flexWrap: wrap ? "wrap" : "nowrap" }}>
           {data && Object.keys(data).map((key) => renderItem(data[key]))}
         </View>
       )}

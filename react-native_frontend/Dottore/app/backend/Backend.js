@@ -49,11 +49,15 @@ const localRoutes = {
       const true_attr = AttributeEnum[attr];
       if (true_attr.short_name !== artifact_mainattr) {
         const step = true_attr.subattr_step;
+        const min_val = min_scale * step;
+        const max_val = max_scale * step;
         retval[true_attr.short_name] = {
           key: true_attr.short_name,
-          min_val: min_scale * step,
-          max_val: max_scale * step,
+          min_val,
+          max_val,
           step,
+          percent: max_val < 1,
+          decimal_fixed: max_val < 1 ? 1 : 0,
         };
       }
     });
