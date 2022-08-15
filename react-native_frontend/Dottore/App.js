@@ -1,5 +1,6 @@
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Switch, Text, TouchableHighlight, StyleSheet, View } from "react-native";
 import { getBackendJson, postBackendJson } from "./app/backend/Backend";
@@ -25,7 +26,7 @@ export default function App() {
   const [language, setLanguage] = useState(languages.EN.key);
 
   const theme = darkMode ? darkTheme : lightTheme;
-  theme.language = languages[language]
+  theme.language = languages[language];
 
   function Setting({ navigation }) {
     const languageData = {};
@@ -72,8 +73,10 @@ export default function App() {
     );
   };
 
+  console.log(theme.statusBarStyle)
   return (
     <ThemeContext.Provider value={{ theme, language }}>
+      <StatusBar style={theme.statusBarStyle} />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="SingleArtifactRating"
@@ -82,7 +85,6 @@ export default function App() {
               backgroundColor: theme.colors.bar,
             },
             headerTintColor: theme.colors.textContrast,
-            statusBarColor: theme.colors.bar,
             headerRight: () => ToSetting(),
           }}
         >

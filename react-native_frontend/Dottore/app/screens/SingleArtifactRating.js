@@ -9,6 +9,7 @@ import {
   View,
   StyleSheet,
   Alert,
+  StatusBar,
 } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { getBackendJson, postBackendJson } from "../backend/Backend";
@@ -16,8 +17,8 @@ import key_2_lan from "../language/key_2_lan";
 import { lightTheme, ThemeContext } from "../styles/Styles";
 import { SelectMultiple, SelectOne, TitledSlider } from "../components/Selection";
 import prompt_2_lan from "../language/prompt_2_lan";
-import { StatusBar } from "expo-status-bar";
 import languages from "../language/languages";
+// import { StatusBar } from "expo-status-bar";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -231,9 +232,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
   // ==========
   return (
     <ScrollView backgroundColor={theme.colors.background}>
-      {theme.statusBarStyle === "light" && <StatusBar style="light" />}
-      {theme.statusBarStyle === "dark" && <StatusBar style="dark" />}
-      {/* <StatusBar style={theme.statusBarStyle} /> */}
+      {/* {theme.statusBarStyle === "light" && <StatusBar style="light" />}
+      {theme.statusBarStyle === "dark" && <StatusBar style="dark" />} */}
       {/* <Text style={{ color: theme.colors.text }}>
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
@@ -296,7 +296,10 @@ export function SingleArtifactRatingScreen({ navigation }) {
             style={{ flex: 1, justifyContent: "center" }}
             underlayColor={theme.colors.background}
             onPress={() => {
-              Alert.alert("Not", "content");
+              Alert.alert(
+                prompt_2_lan("explanation", language),
+                prompt_2_lan("one_of_set_explanation", language)
+              );
             }}
           >
             <Text style={{ color: theme.colors.text, textDecorationLine: "underline" }}>
@@ -314,26 +317,24 @@ export function SingleArtifactRatingScreen({ navigation }) {
       )}
       <View style={styles.component}>{SubmissionButton}</View>
       {Object.keys(result).length > 0 && (
-        <View>
-          <Text>{prompt_2_lan("on_avg", language)}</Text>
-          <Text>
+        <View style={{ padding: 10 }}>
+          <Text style={[theme.text.content, { color: theme.colors.text }]}>
+            {prompt_2_lan("on_avg", language)}
+          </Text>
+          <Text style={[theme.text.text, { color: theme.colors.text }]}>
             {(result.art_runs / (specificSet ? 1 : 2)).toFixed(0)}
             {prompt_2_lan("domain_runs_needed", language)}
-          </Text>
-          <Text>
+            {"\n"}
             {((1 - result.art_relative / (specificSet ? 2 : 1)) * 100).toFixed(3)}%{" "}
             {artifactTypes[artifactType].title}
             {prompt_2_lan("compare_same_level", language)}
-          </Text>
-          <Text>
+            {"\n"}
             {result.art_curr.toFixed(1)}
             {prompt_2_lan("is_curr_score", language)}
-          </Text>
-          <Text>
+            {"\n"}
             {result.art_expect.toFixed(1)}
             {prompt_2_lan("is_expected_score", language)}
-          </Text>
-          <Text>
+            {"\n"}
             {result.art_extreme.toFixed(1)}
             {prompt_2_lan("is_extreme_score", language)}
           </Text>
