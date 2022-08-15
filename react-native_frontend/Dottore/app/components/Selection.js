@@ -1,6 +1,8 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect } from "react";
 import { TouchableHighlight, View, Text, ScrollView, StyleSheet } from "react-native";
+import key_2_lan from "../language/key_2_lan";
+import languages from "../language/languages";
 import prompt_2_lan from "../language/prompt_2_lan";
 import { lightTheme } from "../styles/Styles";
 
@@ -20,6 +22,7 @@ export function SelectOne({
   onValueChange = (f) => f,
   title = "",
   theme = lightTheme,
+  language = languages.EN.key,
   wrap = false,
 }) {
   const updateStates = (key) => {
@@ -45,7 +48,9 @@ export function SelectOne({
             padding: 5,
           }}
         >
-          <Text style={{ color: theme.colors.textContrast }}>{item.title || item.key}</Text>
+          <Text style={{ color: theme.colors.textContrast }}>
+            {item.title || key_2_lan(item.key, language)}
+          </Text>
         </View>
       </TouchableHighlight>
     );
@@ -60,7 +65,7 @@ export function SelectOne({
       {Object.keys(data).length > 0 && title !== "" && (
         <Text style={[theme.text.content, { color: theme.colors.text }]}>
           {title} [{(data[value] && data[value].title) || ""}]{" "}
-          {wrap ? "" : prompt_2_lan("options_scrollable", theme.language.key)}
+          {wrap ? "" : prompt_2_lan("options_scrollable", language)}
           {/* {title} [{value}] {wrap ? "" : "(options scrollable)"} */}
         </Text>
       )}
@@ -70,9 +75,9 @@ export function SelectOne({
         </ScrollView>
       )}
       {wrap && (
-      <View style={{ flexDirection: "row", flexWrap: wrap ? "wrap" : "nowrap" }}>
-        {data && Object.keys(data).map((key) => renderItem(data[key]))}
-      </View>
+        <View style={{ flexDirection: "row", flexWrap: wrap ? "wrap" : "nowrap" }}>
+          {data && Object.keys(data).map((key) => renderItem(data[key]))}
+        </View>
       )}
     </View>
   );
@@ -93,8 +98,9 @@ export function SelectMultiple({
   onValueChange = (f) => f,
   title = "",
   maxNum = 4,
-  wrap = false,
   theme = lightTheme,
+  language = languages.EN.key,
+  wrap = false,
 }) {
   const updateStates = (key) => {
     const currentSelected = value;
@@ -121,6 +127,7 @@ export function SelectMultiple({
     }
   };
   const renderItem = (item) => {
+    console.log(">", language, item);
     return (
       <TouchableHighlight
         style={styles.option}
@@ -136,7 +143,9 @@ export function SelectMultiple({
             padding: 5,
           }}
         >
-          <Text style={{ color: theme.colors.textContrast }}>{item.title || item.key}</Text>
+          <Text style={{ color: theme.colors.textContrast }}>
+            {item.title || key_2_lan(item.key, language)}
+          </Text>
         </View>
       </TouchableHighlight>
     );
@@ -152,7 +161,7 @@ export function SelectMultiple({
     <View style={styles.component}>
       {Object.keys(data).length > 0 && title !== "" && (
         <Text style={[theme.text.content, { color: theme.colors.text }]}>
-          {title} {wrap ? "" : prompt_2_lan("options_scrollable", theme.language.key)}
+          {title} {wrap ? "" : prompt_2_lan("options_scrollable", language)}
         </Text>
       )}
       {!wrap && (

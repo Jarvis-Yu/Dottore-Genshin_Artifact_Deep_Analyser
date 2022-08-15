@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Button,
   Dimensions,
   ScrollView,
   Switch,
@@ -9,12 +8,11 @@ import {
   View,
   StyleSheet,
   Alert,
-  StatusBar,
 } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { getBackendJson, postBackendJson } from "../backend/Backend";
 import key_2_lan from "../language/key_2_lan";
-import { lightTheme, ThemeContext } from "../styles/Styles";
+import { LanguageContext, lightTheme, ThemeContext } from "../styles/Styles";
 import { SelectMultiple, SelectOne, TitledSlider } from "../components/Selection";
 import prompt_2_lan from "../language/prompt_2_lan";
 import languages from "../language/languages";
@@ -22,7 +20,6 @@ import languages from "../language/languages";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
-  // const [selectedLanguage, setSelectedLanguage] = useState();
   const [artifactLevel, setArtifactLevel] = useState(0);
   const [artifactType, setArtifactType] = useState("");
   const [artifactMainAttr, setArtifactMainAttr] = useState("");
@@ -36,10 +33,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState({});
   const disableSubmit = Object.keys(artifactSubAttr).length < (artifactLevel >= 4 ? 4 : 3);
 
-  const themeData = React.useContext(ThemeContext);
-  const theme = themeData.theme;
-  const language = themeData.language;
-  theme.language = languages[themeData.language];
+  const theme = React.useContext(ThemeContext);
+  const language = React.useContext(LanguageContext);
 
   function MultipleSlider({
     data = {},
@@ -47,6 +42,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     onValueChange = (f) => f,
     title = "",
     theme = lightTheme,
+    language = languages.EN.key,
   }) {
     const updateValue = (the_key, val) => {
       const tmpVal = {};
@@ -91,7 +87,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
             >
               <View style={{ padding: 5, alignContent: "center" }}>
                 <Text style={[theme.text.text, { color: theme.colors.text }]}>
-                  {item.title || item.key}
+                  {item.title || key_2_lan(item.key, language)}
                 </Text>
                 <Text style={[theme.text.text, { color: theme.colors.text }]}>
                   {value[item.key] &&
@@ -175,14 +171,14 @@ export function SingleArtifactRatingScreen({ navigation }) {
         route: "/artifact/types",
       });
       if (resp.ok) {
-        Object.keys(resp.data).forEach((key) => {
-          resp.data[key].title = key_2_lan(key, language);
-        });
+        // Object.keys(resp.data).forEach((key) => {
+        //   resp.data[key].title = key_2_lan(key, language);
+        // });
         setArtifactTypes(resp.data);
       }
     };
     f();
-  }, [themeData]);
+  }, []);
 
   useEffect(() => {
     if (artifactType !== "") {
@@ -194,15 +190,15 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
-          Object.keys(resp.data).forEach((key) => {
-            resp.data[key].title = key_2_lan(key, language);
-          });
+          // Object.keys(resp.data).forEach((key) => {
+          //   resp.data[key].title = key_2_lan(key, language);
+          // });
           setArtifactMainAttrs(resp.data);
         }
       };
       f();
     }
-  }, [artifactType, themeData]);
+  }, [artifactType]);
 
   useEffect(() => {
     if (artifactMainAttr !== "") {
@@ -215,9 +211,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
-          Object.keys(resp.data).forEach((key) => {
-            resp.data[key].title = key_2_lan(key, language);
-          });
+          // Object.keys(resp.data).forEach((key) => {
+          //   resp.data[key].title = key_2_lan(key, language);
+          // });
           setArtifactSubAttrs(resp.data);
         }
       };
@@ -225,15 +221,13 @@ export function SingleArtifactRatingScreen({ navigation }) {
     } else {
       setArtifactSubAttrs({});
     }
-  }, [artifactMainAttr, themeData]);
+  }, [artifactMainAttr]);
 
   // ==========
   // Experiment()
   // ==========
   return (
     <ScrollView backgroundColor={theme.colors.background}>
-      {/* {theme.statusBarStyle === "light" && <StatusBar style="light" />}
-      {theme.statusBarStyle === "dark" && <StatusBar style="dark" />} */}
       {/* <Text style={{ color: theme.colors.text }}>
         [{artifactLevel}][{artifactType}][{artifactMainAttr}][
         {Object.keys(artifactSelectedSubAttrs)}]
@@ -258,6 +252,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         value={artifactType}
         onValueChange={setArtifactType}
         theme={theme}
+        language={language}
         wrap={true}
       />
       <SelectOne
@@ -266,6 +261,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         value={artifactMainAttr}
         onValueChange={setArtifactMainAttr}
         theme={theme}
+        language={language}
         wrap={true}
       />
       <SelectMultiple
@@ -275,6 +271,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         onValueChange={setArtifactSelectedSubAttrs}
         maxNum={4}
         theme={theme}
+        language={language}
         wrap={true}
       />
       {MultipleSlider({
@@ -282,6 +279,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
         value: artifactSubAttr,
         onValueChange: setArtifactSubAttr,
         theme,
+        language,
       })}
       {Object.keys(artifactSelectedSubAttrs).length > 0 && (
         <View

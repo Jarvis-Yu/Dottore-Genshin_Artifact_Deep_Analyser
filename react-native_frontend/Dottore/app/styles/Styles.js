@@ -13,6 +13,7 @@ const colorsOptions = {
 };
 
 export const ThemeContext = React.createContext({});
+export const LanguageContext = React.createContext({});
 
 const text = {
   header: {

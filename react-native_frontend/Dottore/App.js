@@ -10,7 +10,7 @@ import prompt_2_lan from "./app/language/prompt_2_lan";
 import RootTabs from "./app/screens/RootTabs";
 import SettingScreen from "./app/screens/SettingScreen";
 import { SingleArtifactRatingScreen } from "./app/screens/SingleArtifactRating";
-import { darkTheme, lightTheme, ThemeContext } from "./app/styles/Styles";
+import { darkTheme, LanguageContext, lightTheme, ThemeContext } from "./app/styles/Styles";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +26,6 @@ export default function App() {
   const [language, setLanguage] = useState(languages.EN.key);
 
   const theme = darkMode ? darkTheme : lightTheme;
-  theme.language = languages[language];
 
   function Setting({ navigation }) {
     const languageData = {};
@@ -67,43 +66,45 @@ export default function App() {
         onPress={() => navigation.navigate("Setting")}
       >
         <Text style={[theme.text.title, { color: theme.colors.textContrast }]}>
-          {prompt_2_lan("setting", theme.language.key)}
+          {prompt_2_lan("setting", language)}
         </Text>
       </TouchableHighlight>
     );
   };
 
-  console.log(theme.statusBarStyle)
   return (
-    <ThemeContext.Provider value={{ theme, language }}>
-      <StatusBar style={theme.statusBarStyle} />
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="SingleArtifactRating"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: theme.colors.bar,
-            },
-            headerTintColor: theme.colors.textContrast,
-            headerRight: () => ToSetting(),
-          }}
-        >
-          <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />
-          <Stack.Screen
-            name="SingleArtifactRating"
-            component={SingleArtifactRatingScreen}
-            options={{ title: prompt_2_lan("single_artifact_rating", language) }}
-          />
-          <Stack.Screen
-            name="Setting"
-            component={Setting}
-            options={{
-              title: prompt_2_lan("setting", language),
-              headerRight: () => <></>,
+    <ThemeContext.Provider value={theme}>
+      <LanguageContext.Provider value={language}>
+        <StatusBar style={theme.statusBarStyle} />
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName="SingleArtifactRating"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: theme.colors.bar,
+              },
+              headerTintColor: theme.colors.textContrast,
+              headerRight: () => ToSetting(),
+              headerBackTitle: "",
             }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+          >
+            <Stack.Screen name="RootTabs" component={RootTabs} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="SingleArtifactRating"
+              component={SingleArtifactRatingScreen}
+              options={{ title: prompt_2_lan("single_artifact_rating", language) }}
+            />
+            <Stack.Screen
+              name="Setting"
+              component={Setting}
+              options={{
+                title: prompt_2_lan("setting", language),
+                headerRight: () => <></>,
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </LanguageContext.Provider>
     </ThemeContext.Provider>
   );
 }

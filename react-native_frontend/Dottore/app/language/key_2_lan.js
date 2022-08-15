@@ -1,4 +1,5 @@
 const key_lan_pair = {
+  // languages
   Flower: {
     EN: "Flower",
     CH: "生之花",
