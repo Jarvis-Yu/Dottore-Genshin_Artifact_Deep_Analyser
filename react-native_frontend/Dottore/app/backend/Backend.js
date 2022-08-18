@@ -18,6 +18,13 @@ const localRoutes = {
     })
     return retval;
   },
+  "/artifact/subattrs": () => {
+    const retval = [];
+    Object.keys(ArtifactEnum.FLOWER.subattr_weights_readonly).forEach((key) => {
+      retval.push(AttributeEnum[key].short_name)
+    })
+    return retval;
+  },
   "/artifact/type-to-mainattrs": ({ args }) => {
     const retval = {};
     // if (!args.type) {

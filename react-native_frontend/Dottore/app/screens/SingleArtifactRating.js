@@ -13,7 +13,13 @@ import { Slider } from "@miblanchard/react-native-slider";
 import { getBackendJson, postBackendJson } from "../backend/Backend";
 import key_2_lan from "../language/key_2_lan";
 import { LanguageContext, lightTheme, ThemeContext } from "../styles/Styles";
-import { SelectMultiple, SelectOne, TitledSlider } from "../components/Selection";
+import {
+  MultipleSlider,
+  SelectMultiple,
+  SelectOne,
+  TitledSlider,
+  TitledSwitch,
+} from "../components/Selection";
 import prompt_2_lan from "../language/prompt_2_lan";
 import languages from "../language/languages";
 // import { StatusBar } from "expo-status-bar";
@@ -23,107 +29,24 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactLevel, setArtifactLevel] = useState(0);
   const [artifactType, setArtifactType] = useState("");
   const [artifactMainAttr, setArtifactMainAttr] = useState("");
-  const [artifactSubAttr, setArtifactSubAttr] = useState("");
+  const [artifactSubAttr, setArtifactSubAttr] = useState({});
+  // advanced
   const [specificSet, setSpecificSet] = useState(true);
+  const [weights, setWeights] = useState({});
   const [result, setResult] = useState({});
 
   const [artifactTypes, setArtifactTypes] = useState({});
   const [artifactMainAttrs, setArtifactMainAttrs] = useState({});
   const [artifactSubAttrs, setArtifactSubAttrs] = useState({});
   const [artifactSelectedSubAttrs, setArtifactSelectedSubAttrs] = useState({});
+  const [advanced, setAdvanced] = useState(false);
+  const [artifactAllSubAttrs, setArtifactAllSubAttrs] = useState({});
   const disableSubmit = Object.keys(artifactSubAttr).length < (artifactLevel >= 4 ? 4 : 3);
 
   const theme = React.useContext(ThemeContext);
   const language = React.useContext(LanguageContext);
 
-  function MultipleSlider({
-    data = {},
-    value = {},
-    onValueChange = (f) => f,
-    title = "",
-    theme = lightTheme,
-    language = languages.EN.key,
-  }) {
-    const updateValue = (the_key, val) => {
-      const tmpVal = {};
-      Object.keys(value).forEach((key) => {
-        if (data[key]) {
-          tmpVal[key] = value[key];
-        }
-      });
-      tmpVal[the_key] = val;
-      onValueChange(tmpVal);
-    };
-    useEffect(() => {
-      Object.keys(value).forEach((key) => {
-        if (!data[key]) {
-          const tmpVal = {};
-          Object.keys(value).forEach((key) => {
-            if (data[key]) {
-              tmpVal[key] = value[key];
-            }
-          });
-          onValueChange(tmpVal);
-        }
-      });
-    });
-    const renderItem = (item) => {
-      const min_val = item.min_val;
-      const max_val = item.max_val * (1 + Math.floor(artifactLevel / 4));
-      const step = item.step;
-      if (!value[item.key]) {
-        updateValue(item.key, min_val);
-      } else if (value[item.key] > max_val + step / 2) {
-        updateValue(item.key, max_val);
-      }
-      return (
-        <View key={item.key} style={{ marginBottom: 5 }}>
-          <View style={{ flexDirection: "row" }}>
-            <ScrollView
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-              style={{ flex: 1 }}
-            >
-              <View style={{ padding: 5, alignContent: "center" }}>
-                <Text style={[theme.text.text, { color: theme.colors.text }]}>
-                  {item.title || key_2_lan(item.key, language)}
-                </Text>
-                <Text style={[theme.text.text, { color: theme.colors.text }]}>
-                  {value[item.key] &&
-                    (value[item.key] * (item.percent ? 100 : 1)).toFixed(item.decimal_fixed)}
-                  {item.percent ? "%" : ""}
-                </Text>
-              </View>
-            </ScrollView>
-            <View style={{ flex: 4 }}>
-              <Slider
-                minimumValue={min_val}
-                maximumValue={max_val}
-                step={item.step}
-                value={value[item.key]}
-                onValueChange={(val) => {
-                  updateValue(item.key, val[0]);
-                }}
-                thumbStyle={{ backgroundColor: theme.colors.selected }}
-                trackStyle={{ backgroundColor: theme.colors.notSelected }}
-                minimumTrackTintColor={theme.colors.notSelected}
-              />
-            </View>
-          </View>
-        </View>
-      );
-    };
-    return (
-      <View style={styles.component}>
-        {Object.keys(data).length > 0 && title !== "" && (
-          <Text style={{ fontSize: 16 }}>
-            {title} [{Object.keys(value).join(" ")}]
-          </Text>
-        )}
-        {data && Object.keys(data).map((key) => renderItem(data[key]))}
-      </View>
-    );
-  }
+  // const submittable = Object.keys(artifactSelectedSubAttrs).length > 0;
 
   const SubmissionButton = (
     <TouchableHighlight
@@ -164,21 +87,97 @@ export function SingleArtifactRatingScreen({ navigation }) {
     </TouchableHighlight>
   );
 
+  const AdvancedSwitch = (
+    <TitledSwitch
+      title={"Show Advanced Settings"}
+      value={advanced}
+      setValue={setAdvanced}
+      theme={theme}
+    />
+  );
+
+  const OneOfSet = (
+    <TitledSwitch
+      title={prompt_2_lan("specific_set", language)}
+      onPress={() => {
+        Alert.alert(
+          prompt_2_lan("explanation", language),
+          prompt_2_lan("one_of_set_explanation", language)
+        );
+      }}
+      value={specificSet}
+      setValue={setSpecificSet}
+      theme={theme}
+    />
+  );
+
+  const WeightsSetter = (
+    <>
+      <View style={styles.component}>
+        <Text>Set Weights of Attributes(0~1)</Text>
+      </View>
+      {MultipleSlider({
+        data: artifactAllSubAttrs,
+        value: weights,
+        onValueChange: (val) => {
+          let flag = false;
+          Object.keys(val).some((key) => {
+            if (!Object.keys(weights).includes(key)) {
+              flag = true;
+              return true;
+            } else if (weights[key] !== val[key]) {
+              flag = true;
+              return true;
+            }
+          });
+          if (flag) {
+            setWeights(val);
+          }
+        },
+        theme,
+        language,
+      })}
+    </>
+  );
+
+  // get artifact types && else
   useEffect(() => {
     const f = async () => {
       const resp = await getBackendJson({
         route: "/artifact/types",
       });
       if (resp.ok) {
-        // Object.keys(resp.data).forEach((key) => {
-        //   resp.data[key].title = key_2_lan(key, language);
-        // });
         setArtifactTypes(resp.data);
       }
     };
     f();
   }, []);
 
+  // get artifact sub-attributes
+  useEffect(() => {
+    const f = async () => {
+      const resp = await getBackendJson({
+        route: "/artifact/subattrs",
+      });
+      if (resp.ok) {
+        const tmpSubAttrs = {};
+        resp.data.forEach((key) => {
+          tmpSubAttrs[key] = {
+            key,
+            min_val: 0,
+            max_val: 1,
+            step: 0.05,
+            decimal_fixed: 2,
+            percent: false,
+          };
+        });
+        setArtifactAllSubAttrs(tmpSubAttrs);
+      }
+    };
+    f();
+  }, []);
+
+  // get artifact main-attributes
   useEffect(() => {
     if (artifactType !== "") {
       const f = async () => {
@@ -189,9 +188,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
-          // Object.keys(resp.data).forEach((key) => {
-          //   resp.data[key].title = key_2_lan(key, language);
-          // });
           setArtifactMainAttrs(resp.data);
         }
       };
@@ -199,6 +195,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
     }
   }, [artifactType]);
 
+  // get artifact sub-attributes
   useEffect(() => {
     if (artifactMainAttr !== "") {
       const f = async () => {
@@ -210,9 +207,6 @@ export function SingleArtifactRatingScreen({ navigation }) {
           },
         });
         if (resp.ok) {
-          // Object.keys(resp.data).forEach((key) => {
-          //   resp.data[key].title = key_2_lan(key, language);
-          // });
           setArtifactSubAttrs(resp.data);
         }
       };
@@ -277,40 +271,16 @@ export function SingleArtifactRatingScreen({ navigation }) {
         data: artifactSelectedSubAttrs,
         value: artifactSubAttr,
         onValueChange: setArtifactSubAttr,
+        maxValCff: 1 + Math.floor(artifactLevel / 4),
         theme,
         language,
       })}
-      {Object.keys(artifactSelectedSubAttrs).length > 0 && (
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            marginHorizontal: 10,
-            marginVertical: 0,
-          }}
-        >
-          <TouchableHighlight
-            style={{ flex: 1, justifyContent: "center" }}
-            underlayColor={theme.colors.background}
-            onPress={() => {
-              Alert.alert(
-                prompt_2_lan("explanation", language),
-                prompt_2_lan("one_of_set_explanation", language)
-              );
-            }}
-          >
-            <Text style={{ color: theme.colors.text, textDecorationLine: "underline" }}>
-              {prompt_2_lan("specific_set", language)}
-            </Text>
-          </TouchableHighlight>
-          <View style={{ flex: 4, flexDirection: "row", justifyContent: "space-between" }}>
-            <Switch
-              trackColor={{ false: theme.colors.notSelected, true: theme.colors.selected }}
-              value={specificSet}
-              onValueChange={() => setSpecificSet((previousState) => !previousState)}
-            />
-          </View>
-        </View>
+      {AdvancedSwitch}
+      {advanced && (
+        <>
+          {OneOfSet}
+          {WeightsSetter}
+        </>
       )}
       <View style={styles.component}>{SubmissionButton}</View>
       {Object.keys(result).length > 0 && (

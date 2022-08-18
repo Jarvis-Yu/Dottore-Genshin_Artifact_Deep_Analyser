@@ -33,7 +33,7 @@ So for the foreseeable future, only `android apk` will be released.
 ### Supported Languages?
 
 - English
-- 简体中文 (developing)
+- 简体中文
 - 日本語 (if anyone volunteers to translate for me)
 
 ## Contact

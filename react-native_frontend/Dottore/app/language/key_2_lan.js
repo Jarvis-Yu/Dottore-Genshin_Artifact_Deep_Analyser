@@ -62,31 +62,31 @@ const key_lan_pair = {
   },
   Pyro: {
     EN: "Pyro",
-    CH: "火",
+    CH: "火伤",
   },
   Hydro: {
     EN: "Hydro",
-    CH: "水",
+    CH: "水伤",
   },
   Anemo: {
     EN: "Anemo",
-    CH: "风",
+    CH: "风伤",
   },
   Electro: {
     EN: "Electro",
-    CH: "雷",
+    CH: "雷伤",
   },
   Dendro: {
     EN: "Dendro",
-    CH: "草",
+    CH: "草伤",
   },
   Cryo: {
     EN: "Cryo",
-    CH: "冰",
+    CH: "冰伤",
   },
   Geo: {
     EN: "Geo",
-    CH: "岩",
+    CH: "岩伤",
   },
   Physical: {
     EN: "Physical",
