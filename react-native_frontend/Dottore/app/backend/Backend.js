@@ -1,7 +1,7 @@
 import { Artifact } from "./artifact/artifact";
 import { ArtifactAttrs } from "./artifact/artifact_attrs";
 import { p_get_set, p_get_type, rarity_in_domain_runs } from "./artifact/rarity";
-import { WeightedAttrsPresets } from "./artifact/weighted_attrs";
+import { WeightedAttrs, WeightedAttrsPresets } from "./artifact/weighted_attrs";
 import { ArtifactEnum, ArtifactEnum_find_with_short_name } from "./consts/artifact_consts";
 import { AttributeEnum, AttributeEnum_find_with_short_name } from "./consts/attribute_consts";
 
@@ -14,15 +14,15 @@ const localRoutes = {
     Object.keys(ArtifactEnum).forEach((key) => {
       retval[ArtifactEnum[key].short_name] = {
         key: ArtifactEnum[key].short_name,
-      }
-    })
+      };
+    });
     return retval;
   },
   "/artifact/subattrs": () => {
     const retval = [];
     Object.keys(ArtifactEnum.FLOWER.subattr_weights_readonly).forEach((key) => {
-      retval.push(AttributeEnum[key].short_name)
-    })
+      retval.push(AttributeEnum[key].short_name);
+    });
     return retval;
   },
   "/artifact/type-to-mainattrs": ({ args }) => {
@@ -34,7 +34,7 @@ const localRoutes = {
     const artifact = ArtifactEnum_find_with_short_name(artifact_type);
     if (artifact) {
       Object.keys(artifact.mainattr_weights_readonly).forEach((mainattr) => {
-        const short_name = AttributeEnum[mainattr].short_name
+        const short_name = AttributeEnum[mainattr].short_name;
         retval[short_name] = {
           key: short_name,
         };
@@ -85,18 +85,26 @@ const localRoutes = {
       const value = existing_subattrs[attr] / true_key.subattr_max_val;
       artifact_subattrs.add(key, value);
     });
+    const artifact_weights = new WeightedAttrs();
+    Object.keys(args.weights).forEach((attr) => {
+      const true_key = AttributeEnum_find_with_short_name(attr);
+      const key = true_key.key;
+      artifact_weights.add(key, args.weights[attr]);
+    });
+
     const art = Artifact.rating_only_plan(
       artifact_level,
       artifact_kind,
       artifact_mainattr,
       artifact_subattrs,
-      WeightedAttrsPresets.crit_atk_er_em_plan
+      artifact_weights,
+      // WeightedAttrsPresets.crit_atk_er_em_plan
     );
-    art_expect = art.expected_rating({ crit_based: true });
-    art_curr = art.current_rating({ crit_based: true });
-    art_extreme = art.extreme_rating({ crit_based: true });
-    art_relative = art.relative_p({});
-    art_runs = rarity_in_domain_runs(art_relative * p_get_set() * p_get_type());
+    const art_expect = art.expected_rating({ crit_based: true });
+    const art_curr = art.current_rating({ crit_based: true });
+    const art_extreme = art.extreme_rating({ crit_based: true });
+    const art_relative = art.relative_p({});
+    const art_runs = rarity_in_domain_runs(art_relative * p_get_set() * p_get_type());
     return {
       art_expect,
       art_extreme,

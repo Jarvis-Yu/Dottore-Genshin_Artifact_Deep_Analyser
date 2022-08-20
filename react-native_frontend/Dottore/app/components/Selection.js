@@ -1,9 +1,9 @@
 import { Slider } from "@miblanchard/react-native-slider";
 import { useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Switch } from "react-native";
-import key_2_lan from "../language/key_2_lan";
+import { key_2_lan } from "../language/key_2_lan";
 import languages from "../language/languages";
-import prompt_2_lan from "../language/prompt_2_lan";
+import { prompt_2_lan } from "../language/prompt_2_lan";
 import { lightTheme } from "../styles/Styles";
 import { Option, TouchableText } from "./Gadgets";
 

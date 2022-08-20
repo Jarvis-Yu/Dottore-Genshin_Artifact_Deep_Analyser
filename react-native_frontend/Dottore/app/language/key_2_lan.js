@@ -1,4 +1,4 @@
-const key_lan_pair = {
+export const key_lan_pair = {
   // languages
   Flower: {
     EN: "Flower",
@@ -98,10 +98,24 @@ const key_lan_pair = {
   }
 };
 
-export default function key_2_lan(key, lan) {
+export function key_2_lan(key, lan) {
   if (key_lan_pair[key] && key_lan_pair[key][lan]) {
     return key_lan_pair[key][lan];
   } else {
     return key;
+  }
+}
+
+/**
+ * @param {prompt_lan_pair} prompt
+ * @param {*} lan
+ */
+export default function key_lan_select(prompt, lan) {
+  if (lan in prompt) {
+    return prompt[lan];
+  } else if ("EN" in prompt) {
+    return prompt.EN;
+  } else {
+    return "";
   }
 }

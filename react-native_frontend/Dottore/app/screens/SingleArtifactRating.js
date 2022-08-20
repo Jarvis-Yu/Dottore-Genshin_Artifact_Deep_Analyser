@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Slider } from "@miblanchard/react-native-slider";
 import { getBackendJson, postBackendJson } from "../backend/Backend";
-import key_2_lan from "../language/key_2_lan";
+import { key_2_lan } from "../language/key_2_lan";
 import { LanguageContext, lightTheme, ThemeContext } from "../styles/Styles";
 import {
   MultipleSlider,
@@ -20,8 +20,9 @@ import {
   TitledSlider,
   TitledSwitch,
 } from "../components/Selection";
-import prompt_2_lan from "../language/prompt_2_lan";
+import prompt_lan_select, { prompt_2_lan, prompt_lan_pair } from "../language/prompt_2_lan";
 import languages from "../language/languages";
+import { TouchableText } from "../components/Gadgets";
 // import { StatusBar } from "expo-status-bar";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
@@ -59,6 +60,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           kind: artifactType,
           mainattr: artifactMainAttr,
           subattrs: artifactSubAttr,
+          weights,
         };
         const f = async (post) => {
           const resp = await postBackendJson({
@@ -89,7 +91,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
 
   const AdvancedSwitch = (
     <TitledSwitch
-      title={"Show Advanced Settings"}
+      title={prompt_lan_select(prompt_lan_pair.show_advanced_setting, language)}
       value={advanced}
       setValue={setAdvanced}
       theme={theme}
@@ -114,7 +116,16 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const WeightsSetter = (
     <>
       <View style={styles.component}>
-        <Text>Set Weights of Attributes(0~1)</Text>
+        <TouchableText
+          title={prompt_2_lan("set_weights_attrs", language)}
+          onPress={() => {
+            Alert.alert(
+              prompt_lan_select(prompt_lan_pair.explanation, language),
+              prompt_lan_select(prompt_lan_pair.set_weights_explanation, language)
+            );
+          }}
+          theme={theme}
+        />
       </View>
       {MultipleSlider({
         data: artifactAllSubAttrs,

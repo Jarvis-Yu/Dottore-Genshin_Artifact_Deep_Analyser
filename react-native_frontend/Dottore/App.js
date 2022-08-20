@@ -6,7 +6,7 @@ import { ScrollView, Switch, Text, TouchableHighlight, StyleSheet, View } from "
 import { getBackendJson, postBackendJson } from "./app/backend/Backend";
 import { SelectOne } from "./app/components/Selection";
 import languages from "./app/language/languages";
-import prompt_2_lan from "./app/language/prompt_2_lan";
+import { prompt_2_lan } from "./app/language/prompt_2_lan";
 import RootTabs from "./app/screens/RootTabs";
 import SettingScreen from "./app/screens/SettingScreen";
 import { SingleArtifactRatingScreen } from "./app/screens/SingleArtifactRating";

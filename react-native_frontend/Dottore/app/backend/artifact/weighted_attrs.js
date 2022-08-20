@@ -16,6 +16,14 @@ export class WeightedAttrs {
   }
 
   /**
+   * @param {string} weighted_attr AttributeEnum
+   * @param {number} weight 
+   */
+  add(weighted_attr, weight) {
+    this.#weighted_attrs[weighted_attr] = weight;
+  }
+
+  /**
    * @param {stinrg} weighted_attr AttributeEnum
    * @returns {number}
    */
