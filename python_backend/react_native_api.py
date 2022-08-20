@@ -15,6 +15,7 @@ app = Flask(__name__)
 # def log(s: str):
 #     f.write(s)
 
+# TODO: Change all usage of short_name to key
 
 @app.route("/", methods=["GET"])
 def hello_world():

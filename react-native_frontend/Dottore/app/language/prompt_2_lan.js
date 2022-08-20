@@ -84,6 +84,10 @@ export const prompt_lan_pair = {
       " instead of using it as a standalone piece.",
     CH: "如果你认为该圣遗物的套装效果你也会用得上，而不是作为散件使用，那么请打开开关。",
   },
+  select_weights_plan: {
+    EN: "Select a weights plan to use",
+    CH: "选择一个合适的属性权重方案"
+  },
   set_weights_attrs: {
     EN: "Set Weights of Attributes(0~1)",
     CH: "设置各属性价值权重（0～1）",

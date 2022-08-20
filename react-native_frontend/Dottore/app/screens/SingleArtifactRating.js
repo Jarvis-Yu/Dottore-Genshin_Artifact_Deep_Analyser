@@ -33,6 +33,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactSubAttr, setArtifactSubAttr] = useState({});
   // advanced
   const [specificSet, setSpecificSet] = useState(true);
+  const [useCustomWeights, setUseCustomWeights] = useState(true);
+  const [selectedWeights, setSelectedWeights] = useState("");
   const [weights, setWeights] = useState({});
   const [result, setResult] = useState({});
 
@@ -112,6 +114,32 @@ export function SingleArtifactRatingScreen({ navigation }) {
       theme={theme}
     />
   );
+
+  const WeightsSelector = (
+    <>
+      <View style={styles.component}>
+        <TouchableText
+          title={prompt_2_lan("set_weights_attrs", language)}
+          // onPress={() => {
+          //   Alert.alert(
+          //     prompt_lan_select(prompt_lan_pair.explanation, language),
+          //     prompt_lan_select(prompt_lan_pair.set_weights_explanation, language)
+          //   );
+          // }}
+          theme={theme}
+        />
+        <SelectOne
+          data = {{}}
+          value = {selectedWeights}
+          onValueChange = {setSelectedWeights}
+          title = {prompt_lan_select(prompt_lan_pair.select_weights_plan, language)}
+          theme = {theme}
+          language = {language}
+          wrap = {false}
+        />
+      </View>
+    </>
+  )
 
   const WeightsSetter = (
     <>
@@ -290,6 +318,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
       {advanced && (
         <>
           {OneOfSet}
+          {WeightsSelector}
           {WeightsSetter}
         </>
       )}

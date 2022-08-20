@@ -1,54 +1,54 @@
 export const key_lan_pair = {
   // languages
-  Flower: {
+  FLOWER: {
     EN: "Flower",
     CH: "生之花",
   },
-  Plume: {
+  PLUME: {
     EN: "Plume",
     CH: "死之羽",
   },
-  Sands: {
+  SANDS: {
     EN: "Sands",
     CH: "时之沙",
   },
-  Goblet: {
+  GOBLET: {
     EN: "Goblet",
     CH: "空之杯",
   },
-  Circlet: {
+  CIRCLET: {
     EN: "Circlet",
     CH: "理之冠",
   },
-  ATK: {
+  ATK_FLAT: {
     EN: "ATK",
     CH: "攻击",
   },
-  DEF: {
+  DEF_FLAT: {
     EN: "DEF",
     CH: "防御",
   },
-  HP: {
+  HP_FLAT: {
     EN: "HP",
     CH: "生命",
   },
-  "ATK%": {
+  ATK_PCT: {
     EN: "ATK%",
     CH: "攻击%",
   },
-  "DEF%": {
+  DEF_PCT: {
     EN: "DEF%",
     CH: "防御%",
   },
-  "HP%": {
+  HP_PCT: {
     EN: "HP%",
     CH: "生命%",
   },
-  "Crit Rate": {
+  CRIT_RATE: {
     EN: "Crit Rate",
     CH: "暴率",
   },
-  "Crit DMG": {
+  CRIT_DMG: {
     EN: "Crit DMG",
     CH: "暴伤",
   },
@@ -60,39 +60,39 @@ export const key_lan_pair = {
     EN: "ER",
     CH: "充能%",
   },
-  Pyro: {
+  PYRO_DB: {
     EN: "Pyro",
     CH: "火伤",
   },
-  Hydro: {
+  HYDRO_DB: {
     EN: "Hydro",
     CH: "水伤",
   },
-  Anemo: {
+  ANEMO_DB: {
     EN: "Anemo",
     CH: "风伤",
   },
-  Electro: {
+  ELECTRO_DB: {
     EN: "Electro",
     CH: "雷伤",
   },
-  Dendro: {
+  DENDRO_DB: {
     EN: "Dendro",
     CH: "草伤",
   },
-  Cryo: {
+  CRYO_DB: {
     EN: "Cryo",
     CH: "冰伤",
   },
-  Geo: {
+  GEO_DB: {
     EN: "Geo",
     CH: "岩伤",
   },
-  Physical: {
+  PHYSICAL_DB: {
     EN: "Physical",
     CH: "物理",
   },
-  "Healing Bonus": {
+  HEALING_BONUS: {
     EN: "Healing Bonus",
     CH: "治疗",
   }
