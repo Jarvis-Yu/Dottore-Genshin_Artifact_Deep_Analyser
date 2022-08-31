@@ -95,7 +95,24 @@ export const key_lan_pair = {
   HEALING_BONUS: {
     EN: "Healing Bonus",
     CH: "治疗",
-  }
+  },
+  // weight plans
+  common_atk_crit_plan: {
+    EN: "Common ATK CRIT",
+    CH: "通用攻击双暴",
+  },
+  common_def_crit_plan: {
+    EN: "Common DEF CRIT",
+    CH: "通用防御双暴",
+  },
+  common_hp_crit_plan: {
+    EN: "Common HP CRIT",
+    CH: "通用生命双暴",
+  },
+  crit_only_plan: {
+    EN: "Crit Only",
+    CH: "仅双暴",
+  },
 };
 
 export function key_2_lan(key, lan) {

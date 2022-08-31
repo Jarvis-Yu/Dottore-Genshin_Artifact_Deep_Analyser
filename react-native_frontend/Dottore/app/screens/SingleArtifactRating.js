@@ -22,8 +22,8 @@ import {
 } from "../components/Selection";
 import prompt_lan_select, { prompt_2_lan, prompt_lan_pair } from "../language/prompt_2_lan";
 import languages from "../language/languages";
-import { TouchableText } from "../components/Gadgets";
-// import { StatusBar } from "expo-status-bar";
+import { Option, TouchableText } from "../components/Gadgets";
+import { WEIGHTS_PLANS, WEIGHTS_PLANS_SELECT } from "../data/weightsPlans";
 
 // navigation: https://reactnavigation.org/docs/getting-started/
 export function SingleArtifactRatingScreen({ navigation }) {
@@ -33,8 +33,8 @@ export function SingleArtifactRatingScreen({ navigation }) {
   const [artifactSubAttr, setArtifactSubAttr] = useState({});
   // advanced
   const [specificSet, setSpecificSet] = useState(true);
-  const [useCustomWeights, setUseCustomWeights] = useState(true);
-  const [selectedWeights, setSelectedWeights] = useState("");
+  const [useCustomWeights, setUseCustomWeights] = useState(false);
+  const [selectedWeights, setSelectedWeights] = useState("common_atk_crit_plan");
   const [weights, setWeights] = useState({});
   const [result, setResult] = useState({});
 
@@ -62,7 +62,11 @@ export function SingleArtifactRatingScreen({ navigation }) {
           kind: artifactType,
           mainattr: artifactMainAttr,
           subattrs: artifactSubAttr,
-          weights,
+          weights: useCustomWeights
+            ? weights
+            : selectedWeights !== ""
+            ? WEIGHTS_PLANS[selectedWeights]
+            : {},
         };
         const f = async (post) => {
           const resp = await postBackendJson({
@@ -115,31 +119,26 @@ export function SingleArtifactRatingScreen({ navigation }) {
     />
   );
 
+  const WeightsSwitch = (
+    <TitledSwitch
+      title={prompt_lan_select(prompt_lan_pair.custom_weight_switch, language)}
+      value={useCustomWeights}
+      setValue={setUseCustomWeights}
+      theme={theme}
+    />
+  );
+
   const WeightsSelector = (
-    <>
-      <View style={styles.component}>
-        <TouchableText
-          title={prompt_2_lan("set_weights_attrs", language)}
-          // onPress={() => {
-          //   Alert.alert(
-          //     prompt_lan_select(prompt_lan_pair.explanation, language),
-          //     prompt_lan_select(prompt_lan_pair.set_weights_explanation, language)
-          //   );
-          // }}
-          theme={theme}
-        />
-        <SelectOne
-          data = {{}}
-          value = {selectedWeights}
-          onValueChange = {setSelectedWeights}
-          title = {prompt_lan_select(prompt_lan_pair.select_weights_plan, language)}
-          theme = {theme}
-          language = {language}
-          wrap = {false}
-        />
-      </View>
-    </>
-  )
+    <SelectOne
+      data={WEIGHTS_PLANS_SELECT}
+      value={selectedWeights}
+      onValueChange={setSelectedWeights}
+      title={prompt_lan_select(prompt_lan_pair.select_weights_plan, language)}
+      theme={theme}
+      language={language}
+      wrap={true}
+    />
+  );
 
   const WeightsSetter = (
     <>
@@ -153,6 +152,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
             );
           }}
           theme={theme}
+          style={theme.text.content}
         />
       </View>
       {MultipleSlider({
@@ -177,6 +177,33 @@ export function SingleArtifactRatingScreen({ navigation }) {
         language,
       })}
     </>
+  );
+
+  const FAQ = (
+    <TouchableHighlight
+      style={styles.option}
+      underlayColor={theme.colors.pressed}
+      disabled={false}
+      onPress={() => {
+        Alert.alert(
+          prompt_lan_select(prompt_lan_pair.explanation, language),
+          prompt_lan_select(prompt_lan_pair.single_art_FAQ, language)
+        );
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: theme.colors.activated,
+          flexDirection: "row",
+          justifyContent: "center",
+          padding: 5,
+        }}
+      >
+        <Text style={[theme.text.title, { color: theme.colors.textContrast }]}>
+          {prompt_2_lan("FAQ", language)}
+        </Text>
+      </View>
+    </TouchableHighlight>
   );
 
   // get artifact types && else
@@ -318,8 +345,9 @@ export function SingleArtifactRatingScreen({ navigation }) {
       {advanced && (
         <>
           {OneOfSet}
-          {WeightsSelector}
-          {WeightsSetter}
+          {WeightsSwitch}
+          {useCustomWeights && WeightsSetter}
+          {!useCustomWeights && WeightsSelector}
         </>
       )}
       <View style={styles.component}>{SubmissionButton}</View>
@@ -330,11 +358,15 @@ export function SingleArtifactRatingScreen({ navigation }) {
           </Text>
           <Text style={[theme.text.text, { color: theme.colors.text }]}>
             {(result.art_runs / (specificSet ? 1 : 2)).toFixed(0)}
-            {prompt_2_lan("domain_runs_needed", language)}
+            {prompt_2_lan(
+              specificSet ? "specific_domain_runs_needed" : "any_domain_runs_needed",
+              language
+            )}
             {"\n"}
             {((1 - result.art_relative / (specificSet ? 2 : 1)) * 100).toFixed(3)}%{" "}
             {artifactTypes[artifactType].title || key_2_lan(artifactType, language)}
-            {prompt_2_lan("compare_same_level", language)}
+            {prompt_2_lan("compare_same_level", language)}{" "}
+            {prompt_2_lan(specificSet ? "para_from_same_domain" : "para_from_any_domain", language)}
             {"\n"}
             {result.art_curr.toFixed(1)}
             {prompt_2_lan("is_curr_score", language)}
@@ -347,6 +379,7 @@ export function SingleArtifactRatingScreen({ navigation }) {
           </Text>
         </View>
       )}
+      <View style={styles.component}>{FAQ}</View>
       <View style={{ height: Dimensions.get("window").height * 0.5 }}></View>
     </ScrollView>
   );

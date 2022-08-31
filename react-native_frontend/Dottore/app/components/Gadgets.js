@@ -44,6 +44,7 @@ export function TouchableText({
   theme = lightTheme,
   contrastText = false,
   underlayColor = undefined,
+  style = {},
 }) {
   const onPressSet = onPress;
   return (
@@ -53,10 +54,10 @@ export function TouchableText({
       onPress={onPress}
     >
       <Text
-        style={{
+        style={[style, {
           color: contrastText ? theme.colors.textContrast : theme.colors.text,
           textDecorationLine: onPressSet ? "underline" : "none",
-        }}
+        }]}
       >
         {title}
       </Text>

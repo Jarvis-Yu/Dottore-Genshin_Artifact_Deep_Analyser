@@ -284,7 +284,12 @@ export function MultipleSlider({
               </Text>
               <Text style={[theme.text.text, { color: theme.colors.text }]}>
                 {value[item.key] &&
-                  (value[item.key] * (item.percent ? 100 : 1)).toFixed(item.decimal_fixed)}
+                  (
+                    Math.round(
+                      value[item.key] * (item.percent ? 100 : 1) * 1000,
+                      item.decimal_fixed + 1
+                    ) / 1000
+                  ).toFixed(item.decimal_fixed)}
                 {item.percent ? "%" : ""}
               </Text>
             </View>

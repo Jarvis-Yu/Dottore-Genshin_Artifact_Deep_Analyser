@@ -1,3 +1,5 @@
+import time
+
 from python_backend.artifact.artifact_attrs import ArtifactAttrs
 from python_backend.artifact.rating import artifact_rating_expectation, \
     best_possible_rating, artifact_current_rating, default_rating_to_crit_based_rating
@@ -154,6 +156,7 @@ class ArtifactBuilder:
 
 
 if __name__ == '__main__':
+    start = time.time()
     art1: Artifact = Artifact.rating_only_plan(0, ArtifactEnum.SANDS, AttributeEnum.ATK_PCT,
                                                ArtifactAttrs().set_avg({
                                                    AttributeEnum.CRIT_RATE,
@@ -198,3 +201,5 @@ if __name__ == '__main__':
     print(art4.expected_rating())
     print(art4.extreme_rating())
     print(art4.relative_p())
+    end = time.time()
+    print("time:", end - start)

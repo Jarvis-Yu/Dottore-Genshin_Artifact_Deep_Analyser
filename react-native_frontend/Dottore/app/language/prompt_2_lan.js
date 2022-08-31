@@ -50,6 +50,14 @@ export const prompt_lan_pair = {
     EN: "On average:",
     CH: "平均而言：",
   },
+  specific_domain_runs_needed: {
+    EN: " specific domain runs are needed to obtain an artifact like this.",
+    CH: "次特定圣遗物副本，才能产出一个如此的圣遗物。",
+  },
+  any_domain_runs_needed: {
+    EN: " any domain runs are needed to obtain an artifact like this.",
+    CH: "次任意圣遗物副本，才能产出一个如此的圣遗物。",
+  },
   domain_runs_needed: {
     EN: " domain runs are needed to obtain an artifact like this.",
     CH: "次圣遗物副本，才能产出一个如此的圣遗物。",
@@ -57,6 +65,14 @@ export const prompt_lan_pair = {
   compare_same_level: {
     EN: " of the same level are not better than this one.",
     CH: "同等级时都不比此圣遗物好。",
+  },
+  para_from_same_domain: {
+    EN: "(obtained from the same domain)",
+    CH: "（从同一秘境获取的）"
+  },
+  para_from_any_domain: {
+    EN: "(obtained from any domain)",
+    CH: "（从任意秘境获取的）"
   },
   is_curr_score: {
     EN: " is the current score.",
@@ -84,6 +100,10 @@ export const prompt_lan_pair = {
       " instead of using it as a standalone piece.",
     CH: "如果你认为该圣遗物的套装效果你也会用得上，而不是作为散件使用，那么请打开开关。",
   },
+  custom_weight_switch: {
+    EN: "Use customized weights?",
+    CH: "使用自定义权重？",
+  },
   select_weights_plan: {
     EN: "Select a weights plan to use",
     CH: "选择一个合适的属性权重方案"
@@ -99,7 +119,19 @@ export const prompt_lan_pair = {
         " determine the value of an artifact based on the weights of the attributes.",
     CH: "可以为各个属性设置权重，权重越高，该属性越有价值。\n" +
         "举例来说的话，如果给暴伤权重1，暴击0.5。那么7.8%暴击将和7.8%暴伤在等价。算法基于圣遗物的属性价值为圣遗物排名。",
-  }
+  },
+  FAQ: {
+    EN: "FAQ",
+    CH: "常见问题",
+  },
+  single_art_FAQ: {
+    EN: "1. The score is calculated in this way. If crit rate has weight one," +
+        " 3.5 crit rate has 1 * (3.5 / 3.9) * 7.8 score. Basically, the formula is" +
+        " {weight * (current attribute value / maximum single enhancement value) *" +
+        " maximun single enhance value of crit DMG}",
+    CH: "1. 分数是这样计算的。假设暴击率的权重为1，3.5%暴击率的分数为 1 * (3.5 / 3.9) * 7.8。" +
+        "也就是说公式为 {词条权重 * (当前词条数值/单次强化最大数值) * 暴伤单次强化最大数值}",
+  },
 };
 
 export function prompt_2_lan(key, lan) {

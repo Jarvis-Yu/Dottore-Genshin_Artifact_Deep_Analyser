@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Artifact } from "./artifact/artifact";
 import { ArtifactAttrs } from "./artifact/artifact_attrs";
 import { p_get_set, p_get_type, rarity_in_domain_runs } from "./artifact/rarity";
@@ -12,9 +13,6 @@ const localRoutes = {
   "/artifact/types": () => {
     const retval = {};
     Object.keys(ArtifactEnum).forEach((key) => {
-      // retval[ArtifactEnum[key].short_name] = {
-      //   key: ArtifactEnum[key].short_name,
-      // };
       retval[key] = { key };
     });
     return retval;
@@ -22,7 +20,6 @@ const localRoutes = {
   "/artifact/subattrs": () => {
     const retval = [];
     Object.keys(ArtifactEnum.FLOWER.subattr_weights_readonly).forEach((key) => {
-      // retval.push(AttributeEnum[key].short_name);
       retval.push(key);
     });
     return retval;
@@ -33,14 +30,9 @@ const localRoutes = {
     //   return retval;
     // }
     const artifact_type = args.type;
-    // const artifact = ArtifactEnum_find_with_short_name(artifact_type);
     const artifact = ArtifactEnum[artifact_type];
     if (artifact) {
       Object.keys(artifact.mainattr_weights_readonly).forEach((mainattr) => {
-        // const short_name = AttributeEnum[mainattr].short_name;
-        // retval[short_name] = {
-        //   key: short_name,
-        // };
         retval[mainattr] = {
           key: mainattr,
         };
@@ -80,28 +72,17 @@ const localRoutes = {
     // if (!args.kind || !args.level || !args.mainattr || !args.subattrs) {
     //   return {};
     // }
-    // const artifact_kind = ArtifactEnum_find_with_short_name(args.kind).key;
     const artifact_kind = args.kind;
     const artifact_level = args.level;
-    // const artifact_mainattr = AttributeEnum_find_with_short_name(args.mainattr).key;
     const artifact_mainattr = args.mainattr;
     const artifact_subattrs = new ArtifactAttrs();
     const existing_subattrs = args.subattrs;
     Object.keys(existing_subattrs).forEach((attr) => {
-      // const true_key = AttributeEnum_find_with_short_name(attr);
-      // const key = true_key.key;
-      // const value = existing_subattrs[attr] / true_key.subattr_max_val;
-      // artifact_subattrs.add(key, value);
       const value = existing_subattrs[attr] / AttributeEnum[attr].subattr_max_val;
       artifact_subattrs.add(attr, value);
     });
     const artifact_weights = new WeightedAttrs();
-    Object.keys(args.weights).forEach((attr) => {
-      // const true_key = AttributeEnum_find_with_short_name(attr);
-      // const key = true_key.key;
-      // artifact_weights.add(key, args.weights[attr]);
-      artifact_weights.add(attr, args.weights[attr]);
-    });
+    artifact_weights.set(args.weights);
 
     const art = Artifact.rating_only_plan(
       artifact_level,
@@ -109,7 +90,6 @@ const localRoutes = {
       artifact_mainattr,
       artifact_subattrs,
       artifact_weights
-      // WeightedAttrsPresets.crit_atk_er_em_plan
     );
     const art_expect = art.expected_rating({ crit_based: true });
     const art_curr = art.current_rating({ crit_based: true });
@@ -182,5 +162,33 @@ export async function postBackendJson({ route = "/", args = {} }) {
         return { data: {}, ok: false };
       });
     return k;
+  }
+}
+
+/**
+ * @param {string} key 
+ * @param {string} value 
+ */
+export async function localStore(key, value) {
+  try {
+    await AsyncStorage.setItem(key, value)
+  } catch (e) {
+    console.log("[!] local store failed")
+  }
+}
+
+/**
+ * @param {string} key
+ * @param {*} alter
+ */
+export async function localGet(key, alter) {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (value !== null) {
+      return value;
+    }
+    return alter;
+  } catch (e) {
+    return alter;
   }
 }

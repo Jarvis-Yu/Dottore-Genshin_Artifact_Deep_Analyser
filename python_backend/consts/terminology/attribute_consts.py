@@ -101,19 +101,19 @@ class AttributeEnum(Enum):
     PHYSICAL_DB = _AttributeConsts("Physical", "Physical DMG Bonus", mainattr_max_val=0.466)
     HEALING_BONUS = _AttributeConsts("Healing Bonus", "Healing Bonus%", mainattr_max_val=0.359)
 
-    def name(self):
+    def full_name(self) -> str:
         return self.value.NAME
 
-    def short_name(self):
+    def short_name(self) -> str:
         return self.value.SHORT_NAME
 
-    def mainattr_max_val(self):
+    def mainattr_max_val(self) -> float:
         return self.value.MAINATTR_MAX_VAL
 
-    def subattr_max_val(self):
+    def subattr_max_val(self) -> float:
         return self.value.SUBATTR_10_VAL
 
-    def subattr_step(self):
+    def subattr_step(self) -> float:
         return self.value.SUBATTR_10_VAL / (LIST_SUBATTR_RATIO[-1] * 10)
 
     def subattr_vals(self):

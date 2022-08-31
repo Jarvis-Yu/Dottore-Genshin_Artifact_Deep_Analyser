@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 
 from python_backend.artifact.artifact import Artifact
 from python_backend.artifact.artifact_attrs import ArtifactAttrs
-from python_backend.artifact.rarity import rarity_in_domain_runs
+from python_backend.artifact.rarity import rarity_in_domain_runs, p_get_set, p_get_type
 from python_backend.artifact.weighted_attrs import WeightedAttrs
 from python_backend.consts.terminology.artifact_consts import ArtifactEnum
 from python_backend.consts.terminology.attribute_consts import AttributeEnum
@@ -38,15 +38,32 @@ def repeat():
     return jsonify({"val1": a + 1, "val2": b + 1})
 
 
+@app.route("/artifact/types", methods=["GET"])
+def get_types():
+    retval = {}
+    for t in ArtifactEnum:
+        retval[t.name] = t.name
+    return jsonify(retval)
+
+
+@app.route("/artifact/subattrs", methods=["GET"])
+def get_subattrs():
+    retval = []
+    for key in ArtifactEnum.FLOWER.subattr_weights_readonly():
+        retval.append(key.name)
+    return jsonify(retval)
+
+
 @app.route("/artifact/type-to-mainattrs", methods=["POST"])
 def get_artifact_mainattrs():
     artifact_type: str = request.json["type"]
     artifact: ArtifactEnum
-    artifact = ArtifactEnum.find_with_short_name(artifact_type)
-    retval = []
+    # artifact = ArtifactEnum.find_with_short_name(artifact_type)
+    artifact = ArtifactEnum[artifact_type]
+    retval = {}
     if artifact_type is not None:
         for mainattr in artifact.mainattr_weights_readonly().keys():
-            retval.append({"title": mainattr.short_name()})
+            retval[mainattr.name] = {"key": mainattr.name}
     return jsonify(retval)
 
 
@@ -55,18 +72,22 @@ def get_artifact_subattrs():
     artifact_mainattr: str = request.json["mainattr"]
     artifact_level: int = request.json["level"]
     # max_scale = (artifact_level // 4 + 1) * 10
-    max_scale = 10
-    min_scale = 7
+    max_scale: int = 10
+    min_scale: int = 7
     artifact_subattrs: dict[AttributeEnum, float] = ArtifactEnum.FLOWER.subattr_weights_readonly()
     retval = {}
     for attr in artifact_subattrs:
         if attr.short_name() != artifact_mainattr:
-            step = attr.subattr_step()
+            step: float = attr.subattr_step()
+            min_val: float = min_scale * step
+            max_val: float = max_scale * step
             retval[attr.short_name()] = {
-                "key": attr.short_name(),
-                "min_val": min_scale * step,
-                "max_val": max_scale * step,
+                "key": attr.name,
+                "min_val": min_val,
+                "max_val": max_val,
                 "step": step,
+                "percent": max_val < 1,
+                "decimal_fixed": 1 if (max_val < 1) else 0,
             }
     return jsonify(retval)
 
@@ -87,7 +108,7 @@ def get_all_info():
     art_curr = art.current_rating(crit_based=True)
     art_extreme = art.extreme_rating(crit_based=True)
     art_relative = art.relative_p()
-    art_runs = rarity_in_domain_runs(art_relative * 0.1)
+    art_runs = rarity_in_domain_runs(art_relative * p_get_set() * p_get_type())
     retval = {
         "art_expect": art_expect,
         "art_extreme": art_extreme,

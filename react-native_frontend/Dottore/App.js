@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { ScrollView, Switch, Text, TouchableHighlight, StyleSheet, View } from "react-native";
-import { getBackendJson, postBackendJson } from "./app/backend/Backend";
+import { getBackendJson, localGet, localStore, postBackendJson } from "./app/backend/Backend";
 import { SelectOne } from "./app/components/Selection";
 import languages from "./app/language/languages";
 import { prompt_2_lan } from "./app/language/prompt_2_lan";
@@ -17,6 +17,8 @@ const Stack = createNativeStackNavigator();
 /*
 follow: https://docs.expo.dev/build/setup/
 to build app
+android: eas build -p android --profile preview
+
 also: https://docs.expo.dev/archive/classic-updates/building-standalone-apps/?redirected
 */
 
@@ -24,6 +26,14 @@ export default function App() {
   console.log("[i] App: rendered");
   const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState(languages.EN.key);
+
+  useEffect(() => {
+    const f = async () => {
+      setDarkMode((await localGet("@dark_Mode", "false")) === "true");
+      setLanguage(await localGet("@language", "EN"));
+    };
+    f();
+  }, []);
 
   const theme = darkMode ? darkTheme : lightTheme;
 
@@ -42,7 +52,10 @@ export default function App() {
             <Switch
               trackColor={{ false: theme.colors.notSelected, true: theme.colors.selected }}
               value={darkMode}
-              onValueChange={() => setDarkMode((previousState) => !previousState)}
+              onValueChange={() => {
+                localStore("@dark_Mode", (!darkMode).toString());
+                setDarkMode((previousState) => !previousState);
+              }}
             />
           </View>
         </View>
@@ -50,7 +63,10 @@ export default function App() {
           title={prompt_2_lan("language", language)}
           data={languageData}
           value={language}
-          onValueChange={setLanguage}
+          onValueChange={(val) => {
+            localStore("@language", val);
+            setLanguage(val);
+          }}
           theme={theme}
           wrap={true}
         />
