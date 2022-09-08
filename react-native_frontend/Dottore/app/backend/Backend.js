@@ -3,7 +3,7 @@ import { Artifact } from "./artifact/artifact";
 import { ArtifactAttrs } from "./artifact/artifact_attrs";
 import { p_get_set, p_get_type, rarity_in_domain_runs } from "./artifact/rarity";
 import { WeightedAttrs, WeightedAttrsPresets } from "./artifact/weighted_attrs";
-import { ArtifactEnum, ArtifactEnum_find_with_short_name } from "./consts/artifact_consts";
+import { Artifacts, ArtifactEnum_find_with_short_name } from "./consts/artifact_consts";
 import { AttributeEnum, AttributeEnum_find_with_short_name } from "./consts/attribute_consts";
 
 const local = true;
@@ -12,14 +12,14 @@ const localHost = "http://localhost:41372";
 const localRoutes = {
   "/artifact/types": () => {
     const retval = {};
-    Object.keys(ArtifactEnum).forEach((key) => {
+    Object.keys(Artifacts).forEach((key) => {
       retval[key] = { key };
     });
     return retval;
   },
   "/artifact/subattrs": () => {
     const retval = [];
-    Object.keys(ArtifactEnum.FLOWER.subattr_weights_readonly).forEach((key) => {
+    Object.keys(Artifacts.FLOWER.subattr_weights_readonly).forEach((key) => {
       retval.push(key);
     });
     return retval;
@@ -30,7 +30,7 @@ const localRoutes = {
     //   return retval;
     // }
     const artifact_type = args.type;
-    const artifact = ArtifactEnum[artifact_type];
+    const artifact = Artifacts[artifact_type];
     if (artifact) {
       Object.keys(artifact.mainattr_weights_readonly).forEach((mainattr) => {
         retval[mainattr] = {
@@ -49,7 +49,7 @@ const localRoutes = {
     const true_artifact_mainattr = AttributeEnum[artifact_mainattr];
     const max_scale = 10;
     const min_scale = 7;
-    const artifact_subattrs = ArtifactEnum.FLOWER.subattr_weights_readonly;
+    const artifact_subattrs = Artifacts.FLOWER.subattr_weights_readonly;
     Object.keys(artifact_subattrs).forEach((attr) => {
       const true_attr = AttributeEnum[attr];
       if (true_attr.key !== artifact_mainattr) {

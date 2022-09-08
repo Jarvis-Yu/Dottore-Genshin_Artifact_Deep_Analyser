@@ -1,4 +1,4 @@
-import { ArtifactEnum, MAX_NUM_ATTRS } from "../consts/artifact_consts";
+import { Artifacts, MAX_NUM_ATTRS } from "../consts/artifact_consts";
 import { AttributeEnum, AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
 import { permute } from "../helpers/comb_perm";
 import { copy_object, set_if_exist } from "../helpers/object_helper";
@@ -80,7 +80,7 @@ export function artifact_current_rating(mainattr, attrs, weights) {
  */
 export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights) {
   let rating = 0;
-  const true_artifact_type = ArtifactEnum[artifact_type];
+  const true_artifact_type = Artifacts[artifact_type];
   const true_mainattr = AttributeEnum[mainattr];
   const chances = artifact_remaining_enhance(lvl);
   const chance_per_attr = (chances - (MAX_NUM_ATTRS - attrs.num_of_attrs)) / MAX_NUM_ATTRS;
@@ -118,7 +118,7 @@ export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs,
  */
 export function best_possible_rating(artifact_type, mainattr, lvl, attrs, weights) {
   let rating = 0;
-  const true_artifact_type = ArtifactEnum[artifact_type];
+  const true_artifact_type = Artifacts[artifact_type];
   const true_mainattr = AttributeEnum[mainattr];
   const chances = artifact_remaining_enhance(lvl);
   if (attrs.num_of_attrs === MAX_NUM_ATTRS) {

@@ -1,4 +1,4 @@
-import { ArtifactEnum } from "../consts/artifact_consts";
+import { Artifacts } from "../consts/artifact_consts";
 import { wd_p_key } from "../helpers/random_weighted_dict_selector";
 import { ArtifactAttrs } from "./artifact_attrs";
 import {
@@ -112,7 +112,7 @@ export class Artifact {
       weighted_subattrs = this.#weighted_subattrs;
     }
     const p_main_attr = wd_p_key(
-      ArtifactEnum[this.#artifact_type].mainattr_weights_readonly,
+      Artifacts[this.#artifact_type].mainattr_weights_readonly,
       this.#mainattr
     );
     let p_subattrs = 0;

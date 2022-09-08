@@ -1,7 +1,7 @@
 import {
   ALL_3_ATTR_COMB,
   ALL_4_ATTR_COMB,
-  ArtifactEnum,
+  Artifacts,
   MAX_NUM_ATTRS,
   P_3_SUBATTRS_ART_DOMAIN,
   P_4_SUBATTRS_ART_DOMAIN,
@@ -242,7 +242,7 @@ export function leveled_subattrs_distribution(mainattr, lvl, weights) {
   if (lvl < 4) {
     return new LSDResult({}, -1); // TODO: empty
   }
-  const weighted_subattrs = copy_object(ArtifactEnum.FLOWER.subattr_weights_readonly);
+  const weighted_subattrs = copy_object(Artifacts.FLOWER.subattr_weights_readonly);
   set_if_exist(weighted_subattrs, mainattr, 0);
   let curr_layer = {};
   let next_layer = {};
@@ -334,7 +334,7 @@ export function leveled_subattrs_distribution(mainattr, lvl, weights) {
  */
 export function relative_rarity_compare_subattrs(artifact_type, mainattr, lvl, attrs, weights) {
   const this_rating = artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights);
-  const subattrs_except_main = copy_object(ArtifactEnum[artifact_type].subattr_weights_readonly);
+  const subattrs_except_main = copy_object(Artifacts[artifact_type].subattr_weights_readonly);
   set_if_exist(subattrs_except_main, mainattr, 0);
 
   /**
