@@ -5,16 +5,16 @@
  * @param {number} comboLength - Desired length of combinations.
  * @return {Array} Array of combination arrays.
  */
-export function generateCombinations(sourceArray, comboLength) {
+export function generateCombinations<T>(sourceArray: T[], comboLength: number): T[][] {
   const sourceLength = sourceArray.length;
   if (comboLength > sourceLength) return [];
 
-  const combos = []; // Stores valid combinations as they are generated.
+  const combos: T[][] = []; // Stores valid combinations as they are generated.
 
   // Accepts a partial combination, an index into sourceArray,
   // and the number of elements required to be added to create a full-length combination.
   // Called recursively to build combinations, adding subsequent elements at each call depth.
-  const makeNextCombos = (workingCombo, currentIndex, remainingCount) => {
+  const makeNextCombos = (workingCombo: T[], currentIndex: number, remainingCount: number) => {
     const oneAwayFromComboLength = remainingCount == 1;
 
     // For each element that remaines to be added to the working combination.
@@ -41,7 +41,7 @@ export function generateCombinations(sourceArray, comboLength) {
  * @param {Array<A>} permutation
  * @returns {Array<Array<A>>}
  */
-export function permute(permutation) {
+export function permute<T>(permutation: T[]): T[][] {
   var length = permutation.length,
     result = [permutation.slice()],
     c = new Array(length).fill(0),
@@ -71,12 +71,11 @@ export function permute(permutation) {
  * @param {Array<A>} inputArr
  * @returns {Array<Array<A>>}
  */
-function permutator(inputArr) {
-  var results = [];
+function permutator<T>(inputArr: T[]): T[][] {
+  var results: T[][] = [];
 
-  function permute(arr, memo) {
-    var cur,
-      memo = memo || [];
+  function permute(arr: T[], memo: T[] = []): T[][] {
+    var cur: T[];
 
     for (var i = 0; i < arr.length; i++) {
       cur = arr.splice(i, 1);
