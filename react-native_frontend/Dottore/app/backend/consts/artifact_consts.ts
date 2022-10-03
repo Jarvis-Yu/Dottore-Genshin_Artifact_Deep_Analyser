@@ -80,19 +80,23 @@ export class ArtifactConsts {
   }
 }
 
-export const ALL_3_ATTR_COMB = generateCombinations(
-  Object.keys(new ArtifactConsts("UNDEFINED", "", "", {}).subattr_weights_readonly),
-  3
+export const ALL_3_ATTR_COMB: Attributes_key[][] = <Attributes_key[][]>(
+  generateCombinations(
+    Object.keys(new ArtifactConsts("UNDEFINED", "", "", {}).subattr_weights_readonly),
+    3
+  )
 );
-export const ALL_4_ATTR_COMB = generateCombinations(
-  Object.keys(new ArtifactConsts("UNDEFINED", "", "", {}).subattr_weights_readonly),
-  4
+export const ALL_4_ATTR_COMB: Attributes_key[][] = <Attributes_key[][]>(
+  generateCombinations(
+    Object.keys(new ArtifactConsts("UNDEFINED", "", "", {}).subattr_weights_readonly),
+    4
+  )
 );
 
 export type Artifacts_val = ArtifactConsts;
 type Artifacts_enum = {
   [key in Artifacts_key]: Artifacts_val;
-}
+};
 
 export const Artifacts: Artifacts_enum = {
   FLOWER: new ArtifactConsts("FLOWER", "Flower", "Flower of Life", {

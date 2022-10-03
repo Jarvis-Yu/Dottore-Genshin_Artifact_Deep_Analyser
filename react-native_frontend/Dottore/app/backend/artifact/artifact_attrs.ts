@@ -2,21 +2,19 @@ import { Attributes_key } from "../consts/attribute_consts";
 import { AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
 import { copy_object, get_or } from "../helpers/object_helper";
 
-type attributes_type = { [key in Attributes_key]?: number };
-
 export class ArtifactAttrs {
-  #attrs: attributes_type;
+  #attrs: { [key in Attributes_key]?: number };
   constructor() {
     this.#attrs = {};
   }
 
-  set(attrs: attributes_type): ArtifactAttrs {
+  set(attrs: { [key in Attributes_key]?: number }): ArtifactAttrs {
     this.#attrs = copy_object(attrs);
     return this;
   }
 
   set_avg(attrs: Attributes_key[]): ArtifactAttrs {
-    const dictionary: attributes_type = {};
+    const dictionary: { [key in Attributes_key]?: number } = {};
     attrs.forEach((key) => {
       dictionary[key] = AVG_SUBATTR_RATIO;
     });

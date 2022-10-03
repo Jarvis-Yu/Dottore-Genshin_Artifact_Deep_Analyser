@@ -1,15 +1,13 @@
 import { Attributes_key } from "../consts/attribute_consts";
 import { copy_object, get_or } from "../helpers/object_helper";
 
-type weighted_attrs_type = { [key in Attributes_key]?: number };
-
 export class WeightedAttrs {
-  #weighted_attrs: weighted_attrs_type;
+  #weighted_attrs: { [key in Attributes_key]?: number };
   constructor() {
     this.#weighted_attrs = {};
   }
 
-  set(weighted_attrs: weighted_attrs_type): WeightedAttrs {
+  set(weighted_attrs: { [key in Attributes_key]?: number }): WeightedAttrs {
     this.#weighted_attrs = copy_object(weighted_attrs);
     return this;
   }
