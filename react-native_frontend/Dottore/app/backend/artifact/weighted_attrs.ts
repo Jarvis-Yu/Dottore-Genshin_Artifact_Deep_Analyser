@@ -1,42 +1,34 @@
+import { Attributes_key } from "../consts/attribute_consts";
 import { copy_object, get_or } from "../helpers/object_helper";
 
+type weighted_attrs_type = { [key in Attributes_key]?: number };
+
 export class WeightedAttrs {
-  #weighted_attrs;
+  #weighted_attrs: weighted_attrs_type;
   constructor() {
     this.#weighted_attrs = {};
   }
 
-  /**
-   * @param {Object<string, number>} weighted_attrs Object[AttributeEnum, number]
-   * @returns {WeightedAttrs}
-   */
-  set(weighted_attrs) {
+  set(weighted_attrs: weighted_attrs_type): WeightedAttrs {
     this.#weighted_attrs = copy_object(weighted_attrs);
     return this;
   }
 
-  /**
-   * @param {string} weighted_attr AttributeEnum
-   * @param {number} weight 
-   */
-  add(weighted_attr, weight) {
+  add(weighted_attr: Attributes_key, weight: number): WeightedAttrs {
     this.#weighted_attrs[weighted_attr] = weight;
+    return this;
   }
 
-  /**
-   * @param {stinrg} weighted_attr AttributeEnum
-   * @returns {number}
-   */
-  get(weighted_attr) {
+  get(weighted_attr: Attributes_key): number {
     return get_or(this.#weighted_attrs, weighted_attr, 0);
   }
 
-  get attrs() {
-    return Object.keys(this.#weighted_attrs);
+  get attrs(): Attributes_key[] {
+    return <Attributes_key[]> Object.keys(this.#weighted_attrs);
   }
 }
 
-export const WeightedAttrsPresets = {
+export const WeightedAttrsPresets: { [key: string]: WeightedAttrs } = {
   crit_atk_er_em_plan: new WeightedAttrs().set({
     CRIT_RATE: 1,
     CRIT_DMG: 1,

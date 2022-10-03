@@ -50,7 +50,7 @@ export const Attributes_keyenum: { [key in Attributes_key]: Attributes_key } = {
 /**
  * PRIVATE
  */
-class AttributeConsts {
+export class AttributeConsts {
   #KEY: Attributes_key;
   #SHORT_NAME: string;
   #NAME: string;
