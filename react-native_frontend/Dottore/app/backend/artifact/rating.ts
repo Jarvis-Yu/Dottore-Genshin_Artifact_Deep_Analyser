@@ -1,5 +1,5 @@
-import { Artifacts, MAX_NUM_ATTRS } from "../consts/artifact_consts";
-import { AttributeEnum, AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
+import { Artifacts, Artifacts_key, MAX_NUM_ATTRS } from "../consts/artifact_consts";
+import { Attributes, Attributes_key, AVG_SUBATTR_RATIO } from "../consts/attribute_consts";
 import { permute } from "../helpers/comb_perm";
 import { copy_object, set_if_exist } from "../helpers/object_helper";
 import { wd_p_key } from "../helpers/random_weighted_dict_selector";
@@ -12,9 +12,9 @@ import { WeightedAttrs } from "./weighted_attrs";
  * @returns {number} the probabilty that a particular permutation is chosen with weights.
                      And each item can only be chosen once.
  */
-function p_permutation(weights, permutation) {
+function p_permutation(weights: { [key: string]: number }, permutation: string[]): number {
   let p = 1;
-  const tmp_save = {};
+  const tmp_save: { [key: string]: number } = {};
   permutation.forEach((key) => {
     p *= wd_p_key(weights, key);
     tmp_save[key] = weights[key];
@@ -32,7 +32,10 @@ function p_permutation(weights, permutation) {
  * @returns {number} the probabilty that a particular combination is chosen with weights.
                      And each item can only be chosen once.
  */
-export function p_subattr_combination(weights, combination) {
+export function p_subattr_combination(
+  weights: { [key: string]: number },
+  combination: string[]
+): number {
   const permutations = permute(combination);
   let p = 0;
   permutations.forEach((permutation) => {
@@ -41,19 +44,15 @@ export function p_subattr_combination(weights, combination) {
   return p;
 }
 
-export function artifact_remaining_enhance(lvl) {
+export function artifact_remaining_enhance(lvl: number): number {
   if (lvl > 20 || lvl < 0) {
     return -1;
   }
   return Math.floor((23 - lvl) / 4);
 }
 
-/**
- * @param {number} rating
- * @returns {number}
- */
-export function default_rating_to_crit_based_rating(rating) {
-  return rating * AttributeEnum.CRIT_DMG.subattr_max_val * 100;
+export function default_rating_to_crit_based_rating(rating: number): number {
+  return rating * Attributes.CRIT_DMG.subattr_max_val * 100;
 }
 
 /**
@@ -62,7 +61,11 @@ export function default_rating_to_crit_based_rating(rating) {
  * @param {WeightedAttrs} weights
  * @returns {number} rating
  */
-export function artifact_current_rating(mainattr, attrs, weights) {
+export function artifact_current_rating(
+  mainattr: Attributes_key,
+  attrs: ArtifactAttrs,
+  weights: WeightedAttrs
+): number {
   let rating = 0;
   attrs.attrs.forEach((attr) => {
     rating += weights.get(attr) * attrs.get_scale(attr);
@@ -78,10 +81,16 @@ export function artifact_current_rating(mainattr, attrs, weights) {
  * @param {WeightedAttrs} weights
  * @returns {number} rating
  */
-export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights) {
+export function artifact_rating_expectation(
+  artifact_type: Artifacts_key,
+  mainattr: Attributes_key,
+  lvl: number,
+  attrs: ArtifactAttrs,
+  weights: WeightedAttrs
+): number {
   let rating = 0;
   const true_artifact_type = Artifacts[artifact_type];
-  const true_mainattr = AttributeEnum[mainattr];
+  const true_mainattr = Attributes[mainattr];
   const chances = artifact_remaining_enhance(lvl);
   const chance_per_attr = (chances - (MAX_NUM_ATTRS - attrs.num_of_attrs)) / MAX_NUM_ATTRS;
   attrs.attrs.forEach((attr) => {
@@ -91,9 +100,9 @@ export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs,
   });
   if (attrs.num_of_attrs === 3) {
     const backup_attrs = copy_object(true_artifact_type.subattr_weights_readonly);
-    set_if_exist(backup_attrs, mainattr, 0)
+    set_if_exist(backup_attrs, mainattr, 0);
     attrs.attrs.forEach((attr) => {
-      set_if_exist(backup_attrs, attr, 0)
+      set_if_exist(backup_attrs, attr, 0);
     });
     weights.attrs.forEach((attr) => {
       if (backup_attrs[attr] && backup_attrs[attr] > 0) {
@@ -116,14 +125,20 @@ export function artifact_rating_expectation(artifact_type, mainattr, lvl, attrs,
  * @param {WeightedAttrs} weights
  * @returns {number} rating
  */
-export function best_possible_rating(artifact_type, mainattr, lvl, attrs, weights) {
+export function best_possible_rating(
+  artifact_type: Artifacts_key,
+  mainattr: Attributes_key,
+  lvl: number,
+  attrs: ArtifactAttrs,
+  weights: WeightedAttrs
+): number {
   let rating = 0;
   const true_artifact_type = Artifacts[artifact_type];
-  const true_mainattr = AttributeEnum[mainattr];
+  const true_mainattr = Attributes[mainattr];
   const chances = artifact_remaining_enhance(lvl);
   if (attrs.num_of_attrs === MAX_NUM_ATTRS) {
     // case when artifact has 4 sub-attrs
-    let best_attrs = [];
+    let best_attrs: Attributes_key[] = [];
     attrs.attrs.forEach((attr) => {
       if (best_attrs.length === 0) {
         best_attrs.push(attr);
@@ -136,11 +151,13 @@ export function best_possible_rating(artifact_type, mainattr, lvl, attrs, weight
     });
     rating += chances * weights.get(best_attrs[0]);
   } else {
-    const all_possible_attrs = Object.keys(true_artifact_type.subattr_weights_readonly);
-    all_possible_attrs[mainattr] = 0;
-    let highest_weighted_attrs = [];
-    let highest_not_in_attrs = [];
+    const all_possible_attrs: Attributes_key[] = <Attributes_key[]>(
+      Object.keys(true_artifact_type.subattr_weights_readonly)
+    );
+    let highest_weighted_attrs: Attributes_key[] = [];
+    let highest_not_in_attrs: Attributes_key[] = [];
     all_possible_attrs.forEach((attr) => {
+      if (attr === mainattr) return;
       const weight_attr = weights.get(attr);
       if (highest_not_in_attrs.length === 0) {
         highest_weighted_attrs.push(attr);
@@ -160,10 +177,10 @@ export function best_possible_rating(artifact_type, mainattr, lvl, attrs, weight
       }
     });
     attrs.attrs.forEach((attr) => {
-      rating += weights.get(attr) * attrs.get_scale(attr)
-    })
-    rating += weights.get(highest_not_in_attrs[0])
-    rating += (chances - 1) * weights.get(highest_weighted_attrs[0])
+      rating += weights.get(attr) * attrs.get_scale(attr);
+    });
+    rating += weights.get(highest_not_in_attrs[0]);
+    rating += (chances - 1) * weights.get(highest_weighted_attrs[0]);
   }
   return rating;
 }

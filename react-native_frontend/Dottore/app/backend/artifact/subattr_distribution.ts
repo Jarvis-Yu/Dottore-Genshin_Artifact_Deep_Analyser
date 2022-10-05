@@ -187,12 +187,6 @@ class LSDResult {
   }
 }
 
-/**
- * @param {string} mainattr AttributeEnum
- * @param {number} lvl
- * @param {WeightedAttrs} weights
- * @returns {LSDResult}
- */
 export function leveled_subattrs_distribution(
   mainattr: Attributes_key,
   lvl: number,
@@ -283,28 +277,17 @@ export function leveled_subattrs_distribution(
   return new LSDResult(curr_layer, lvl);
 }
 
-/**
- * @param {string} artifact_type ArtifactEnum
- * @param {string} mainattr AttributeEnum
- * @param {number} lvl
- * @param {ArtifactAttrs} attrs
- * @param {WeightedAttrs} weights
- * @returns
- */
 export function relative_rarity_compare_subattrs(
   artifact_type: Artifacts_key,
   mainattr: Attributes_key,
   lvl: number,
   attrs: ArtifactAttrs,
   weights: WeightedAttrs
-) {
+): number {
   const this_rating = artifact_rating_expectation(artifact_type, mainattr, lvl, attrs, weights);
   const subattrs_except_main = copy_object(Artifacts[artifact_type].subattr_weights_readonly);
   set_if_exist(subattrs_except_main, mainattr, 0);
 
-  /**
-   * @param {Array<Array>} combs
-   */
   function calculate_p(combs: Attributes_key[][]) {
     const p_list: number[] = [];
     combs.forEach((comb) => {
