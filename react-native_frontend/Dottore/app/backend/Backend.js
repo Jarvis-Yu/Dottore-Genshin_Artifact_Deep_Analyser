@@ -4,7 +4,7 @@ import { ArtifactAttrs } from "./artifact/artifact_attrs";
 import { p_get_set, p_get_type, rarity_in_domain_runs } from "./artifact/rarity";
 import { WeightedAttrs, WeightedAttrsPresets } from "./artifact/weighted_attrs";
 import { Artifacts, ArtifactEnum_find_with_short_name } from "./consts/artifact_consts";
-import { AttributeEnum, AttributeEnum_find_with_short_name } from "./consts/attribute_consts";
+import { Attributes, AttributeEnum_find_with_short_name } from "./consts/attribute_consts";
 
 const local = true;
 const localHost = "http://localhost:41372";
@@ -13,7 +13,9 @@ const localRoutes = {
   "/artifact/types": () => {
     const retval = {};
     Object.keys(Artifacts).forEach((key) => {
-      retval[key] = { key };
+      if (key !== "UNDEFINED") {
+        retval[key] = { key };
+      }
     });
     return retval;
   },
@@ -46,12 +48,12 @@ const localRoutes = {
     //   return retval;
     // }
     const artifact_mainattr = args.mainattr;
-    const true_artifact_mainattr = AttributeEnum[artifact_mainattr];
+    const true_artifact_mainattr = Attributes[artifact_mainattr];
     const max_scale = 10;
     const min_scale = 7;
     const artifact_subattrs = Artifacts.FLOWER.subattr_weights_readonly;
     Object.keys(artifact_subattrs).forEach((attr) => {
-      const true_attr = AttributeEnum[attr];
+      const true_attr = Attributes[attr];
       if (true_attr.key !== artifact_mainattr) {
         const step = true_attr.subattr_step;
         const min_val = min_scale * step;
@@ -78,7 +80,7 @@ const localRoutes = {
     const artifact_subattrs = new ArtifactAttrs();
     const existing_subattrs = args.subattrs;
     Object.keys(existing_subattrs).forEach((attr) => {
-      const value = existing_subattrs[attr] / AttributeEnum[attr].subattr_max_val;
+      const value = existing_subattrs[attr] / Attributes[attr].subattr_max_val;
       artifact_subattrs.add(attr, value);
     });
     const artifact_weights = new WeightedAttrs();
@@ -166,14 +168,14 @@ export async function postBackendJson({ route = "/", args = {} }) {
 }
 
 /**
- * @param {string} key 
- * @param {string} value 
+ * @param {string} key
+ * @param {string} value
  */
 export async function localStore(key, value) {
   try {
-    await AsyncStorage.setItem(key, value)
+    await AsyncStorage.setItem(key, value);
   } catch (e) {
-    console.log("[!] local store failed")
+    console.log("[!] local store failed");
   }
 }
 
